@@ -1,6 +1,6 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
-import { AppShell, Group, Burger, Skeleton } from '@mantine/core';
+import { AppShell, Burger, Skeleton, Avatar } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 
 export default function Sidebar({ children }: PropsWithChildren) {
@@ -19,14 +19,15 @@ export default function Sidebar({ children }: PropsWithChildren) {
         padding="md"
       >
         <AppShell.Header>
-          <Group h="100%" px="md">
+          <div className="w-full h-full px-4 grid grid-cols-2 items-center">
             <Burger
               opened={opened}
               onClick={toggle}
               hiddenFrom="sm"
               size="sm"
             />
-          </Group>
+            <Avatar className="justify-self-end col-start-2">DM</Avatar>
+          </div>
         </AppShell.Header>
         <AppShell.Navbar p="md" w={{ base: 250, sm: 300 }}>
           Navbar
