@@ -30,7 +30,7 @@ export async function addUserToDb(
 export async function addMessage(roomId: number, message: initialMessages) {
   try {
     const user = await prisma.user.findUnique({
-      where: { email: message.author.name },
+      where: { email: message.author.name as string },
       select: { id: true },
     });
     if (!user) throw new Error('Cannot find user');

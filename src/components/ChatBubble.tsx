@@ -15,8 +15,11 @@ const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
         {...props}
         ref={ref}
       >
-        <Avatar src={message.author.picture} alt={message.author.name}>
-          {message.author.name[0]}
+        <Avatar
+          src={message.author.picture}
+          alt={message.author.name || 'profile pic'}
+        >
+          {message?.author?.name?.[0]}
         </Avatar>
         <div className="flex flex-col w-full max-w-[320px] leading-1.5">
           <div className="flex items-center space-x-2 rtl:space-x-reverse">

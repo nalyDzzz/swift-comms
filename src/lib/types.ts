@@ -2,8 +2,8 @@ export type initialMessages = {
   date: Date;
   content: string;
   author: {
-    name: string;
+    name: string | null;
     username?: string | null;
-    picture?: string;
+    picture?: string | null;
   };
 };

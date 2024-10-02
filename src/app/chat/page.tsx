@@ -2,9 +2,10 @@ import ChatInput from '@/components/ChatInput';
 import React from 'react';
 import ChatMessageList from '@/components/ChatMessageList';
 import { getMessages } from '@/lib/dbQueries';
+import { initialMessages } from '@/lib/types';
 
 export default async function Chat() {
-  const messages = await getMessages(1);
+  const messages: initialMessages[] | undefined = await getMessages(1);
   if (!messages) throw new Error('no messages');
   return (
     <div className="h-full">
