@@ -31,9 +31,9 @@ export default function ChatInput({ roomId, ...props }: ChatInputProps) {
 
   const sendMessage = () => {
     const date = new Date();
-    const msg: { message: string; author: string; date: Date } = {
-      message: value,
-      author: session?.user?.email as string,
+    const msg: { content: string; author: { name: string }; date: Date } = {
+      content: value,
+      author: { name: session?.user?.email as string },
       date: date,
     };
     socket.emit('message', { room: roomId, msg });

@@ -35,7 +35,7 @@ app.prepare().then(() => {
         msg,
       }: {
         room: number;
-        msg: { message: string; author: string; date: Date };
+        msg: { content: string; author: { name: string }; date: Date };
       }) => {
         addMessage(room, msg);
         io.to(`${room}`).emit('message', msg);

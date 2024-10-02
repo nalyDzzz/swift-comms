@@ -1,18 +1,26 @@
 'use client';
-import { Message } from '@/lib/dummy-messages';
 import React, { useEffect, useRef, useState } from 'react';
 import ChatBubble from './ChatBubble';
 import { socket } from '@/socket';
+
+type initialMessages = {
+  date: Date;
+  content: string;
+  author: {
+    name: string | null;
+    username: string | null;
+  };
+};
 
 const ChatMessageList = ({
   initialMessages,
   roomId,
 }: {
-  initialMessages: Message[];
+  initialMessages: initialMessages[];
   roomId: number;
 }) => {
   const messagesEnd = useRef<HTMLDivElement | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<initialMessages[]>([]);
   const scrollToBottom = () => {
     messagesEnd.current?.scrollIntoView({ behavior: 'instant' });
   };
@@ -22,7 +30,7 @@ const ChatMessageList = ({
 
   useEffect(() => {
     socket.emit('joinRoom', roomId.toString());
-    socket.on('message', (msg: Message) => {
+    socket.on('message', (msg: initialMessages) => {
       setMessages((prevMessages) => [...prevMessages, msg]);
     });
 

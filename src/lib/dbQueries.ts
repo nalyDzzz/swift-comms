@@ -23,11 +23,11 @@ export async function addUserToDb(email: string, name: string) {
 
 export async function addMessage(
   roomId: number,
-  message: { message: string; author: string; date: Date }
+  message: { content: string; author: { name: string }; date: Date }
 ) {
   try {
     const user = await prisma.user.findUnique({
-      where: { email: message.author },
+      where: { email: message.author.name },
       select: { id: true },
     });
     if (!user) throw new Error('Cannot find user');
@@ -35,11 +35,28 @@ export async function addMessage(
       data: {
         date: message.date,
         authorId: user.id,
-        content: message.message,
+        content: message.content,
         chatroomId: roomId,
       },
     });
     if (!result) throw new Error('Cannot add message to DB');
+  } catch (error) {
+    if (error) console.error(error);
+  }
+}
+
+export async function getMessages(roomId: number) {
+  try {
+    const messages = await prisma.message.findMany({
+      where: { chatroomId: roomId },
+      select: {
+        date: true,
+        author: { select: { name: true, username: true } },
+        content: true,
+      },
+    });
+    if (!messages) throw new Error('Cannot find messages');
+    return messages;
   } catch (error) {
     if (error) console.error(error);
   }
