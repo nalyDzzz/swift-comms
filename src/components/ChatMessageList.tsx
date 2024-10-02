@@ -11,10 +11,10 @@ const ChatMessageList = ({
   initialMessages: initialMessages[];
   roomId: number;
 }) => {
-  const messagesEnd = useRef<HTMLDivElement | null>(null);
+  const messageDiv = useRef<HTMLDivElement | null>(null);
   const [messages, setMessages] = useState<initialMessages[]>([]);
   const scrollToBottom = () => {
-    messagesEnd.current?.scrollIntoView({ behavior: 'instant' });
+    messageDiv.current?.scrollTo(0, messageDiv.current.scrollHeight);
   };
   useEffect(() => {
     scrollToBottom();
@@ -36,14 +36,16 @@ const ChatMessageList = ({
     scrollToBottom();
   }, [messages]);
   return (
-    <div className=" w-full h-[92%] flex flex-col gap-10 overflow-y-scroll p-10 relative">
+    <div
+      className=" w-full h-[92%] flex flex-col gap-10 overflow-y-scroll p-10 relative"
+      ref={messageDiv}
+    >
       {initialMessages.map((e, i) => (
         <ChatBubble message={e} key={i} />
       ))}
       {messages.map((e, i) => (
         <ChatBubble message={e} key={i} />
       ))}
-      <div className="absolute bottom-0" ref={messagesEnd}></div>
     </div>
   );
 };
