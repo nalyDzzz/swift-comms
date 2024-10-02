@@ -1,16 +1,10 @@
+import { initialMessages } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { Avatar } from '@mantine/core';
 import React from 'react';
+import Avatar from './Avatar';
 
 interface ChatBubbleProps extends React.ComponentPropsWithRef<'div'> {
-  message: {
-    date: Date;
-    content: string;
-    author: {
-      name: string | null;
-      username: string | null;
-    };
-  };
+  message: initialMessages;
 }
 
 const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
@@ -21,7 +15,9 @@ const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
         {...props}
         ref={ref}
       >
-        <Avatar src="https://github.com/shadcn.png" />
+        <Avatar src={message.author.picture} alt={message.author.name}>
+          {message.author.name[0]}
+        </Avatar>
         <div className="flex flex-col w-full max-w-[320px] leading-1.5">
           <div className="flex items-center space-x-2 rtl:space-x-reverse">
             <span className="text-sm font-semibold text-gray-900 dark:text-white">

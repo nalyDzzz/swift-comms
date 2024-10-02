@@ -1,8 +1,13 @@
 'use server';
 import prisma from '@/app/api/db';
+import { initialMessages } from './types';
 // import { getServerSession } from 'next-auth';
 
-export async function addUserToDb(email: string, name: string) {
+export async function addUserToDb(
+  email: string,
+  name: string,
+  picture: string | null | undefined
+) {
   try {
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -12,6 +17,7 @@ export async function addUserToDb(email: string, name: string) {
         data: {
           name,
           email,
+          picture,
         },
       });
     }
@@ -21,10 +27,7 @@ export async function addUserToDb(email: string, name: string) {
   }
 }
 
-export async function addMessage(
-  roomId: number,
-  message: { content: string; author: { name: string }; date: Date }
-) {
+export async function addMessage(roomId: number, message: initialMessages) {
   try {
     const user = await prisma.user.findUnique({
       where: { email: message.author.name },
@@ -51,7 +54,7 @@ export async function getMessages(roomId: number) {
       where: { chatroomId: roomId },
       select: {
         date: true,
-        author: { select: { name: true, username: true } },
+        author: { select: { name: true, username: true, picture: true } },
         content: true,
       },
     });

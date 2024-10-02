@@ -2,15 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ChatBubble from './ChatBubble';
 import { socket } from '@/socket';
-
-type initialMessages = {
-  date: Date;
-  content: string;
-  author: {
-    name: string | null;
-    username: string | null;
-  };
-};
+import { initialMessages } from '@/lib/types';
 
 const ChatMessageList = ({
   initialMessages,

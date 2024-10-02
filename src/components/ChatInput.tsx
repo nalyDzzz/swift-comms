@@ -7,6 +7,7 @@ import { useClickOutside } from '@mantine/hooks';
 import { cn } from '@/lib/utils';
 import { socket } from '@/socket';
 import { useSession } from 'next-auth/react';
+import { initialMessages } from '@/lib/types';
 
 type ChatInputProps = {
   roomId: number;
@@ -31,7 +32,7 @@ export default function ChatInput({ roomId, ...props }: ChatInputProps) {
 
   const sendMessage = () => {
     const date = new Date();
-    const msg: { content: string; author: { name: string }; date: Date } = {
+    const msg: initialMessages = {
       content: value,
       author: { name: session?.user?.email as string },
       date: date,

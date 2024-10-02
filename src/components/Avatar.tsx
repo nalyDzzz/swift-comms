@@ -6,8 +6,8 @@ import React, { useEffect, useState } from 'react';
 type AvatarProps = {
   src?: string | undefined | null;
   alt: string;
-  children: React.ReactNode;
-  className: string;
+  children?: React.ReactNode;
+  className?: string;
 };
 
 const Avatar = ({ src, alt, children, className }: AvatarProps) => {

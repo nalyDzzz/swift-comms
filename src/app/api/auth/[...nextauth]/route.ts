@@ -16,9 +16,9 @@ const handler = NextAuth({
   ],
   callbacks: {
     async signIn({ user }) {
-      const { email, name } = user;
+      const { email, name, image } = user;
       if (!email || !name) return false;
-      await addUserToDb(email, name);
+      await addUserToDb(email, name, image);
       return true;
     },
   },
