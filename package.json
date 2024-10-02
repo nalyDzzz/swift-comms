@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nodemon server.js",
-    "build": "next build",
-    "start": "NODE_ENV=production node server.js",
+    "dev": "tsx watch server.js",
+    "build": "next build && tsc --project tsconfig.server.json",
+    "start": "NODE_ENV=production node dist/server.js",
     "lint": "next lint"
   },
   "dependencies": {
@@ -36,6 +36,7 @@
     "postcss-preset-mantine": "^1.17.0",
     "postcss-simple-vars": "^7.0.1",
     "tailwindcss": "^3.4.1",
+    "tsx": "^4.19.1",
     "typescript": "^5"
   }
 }

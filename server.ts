@@ -1,6 +1,7 @@
 import { createServer } from 'node:http';
 import next from 'next';
 import { Server } from 'socket.io';
+import { addMessage } from '@/lib/dbQueries';
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
@@ -29,6 +30,7 @@ app.prepare().then(() => {
 
     socket.on('message', ({ room, msg }) => {
       io.to(room).emit('message', msg);
+      addMessage(room, msg);
     });
 
     socket.on('disconnect', () => {
