@@ -1,3 +1,4 @@
+import { addUserToDb } from '@/lib/dbQueries';
 import NextAuth from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
@@ -13,14 +14,14 @@ const handler = NextAuth({
       clientSecret: process.env.GOOGLE_SECRET as string,
     }),
   ],
-  // callbacks: {
-  //   async signIn({ user }) {
-  //     const { email, name } = user;
-  //     if (!email || !name) return false;
-  //     //   await addUserToDb(email, name);
-  //     return true;
-  //   },
-  // },
+  callbacks: {
+    async signIn({ user }) {
+      const { email, name } = user;
+      if (!email || !name) return false;
+      await addUserToDb(email, name);
+      return true;
+    },
+  },
 });
 
 export { handler as GET, handler as POST };
