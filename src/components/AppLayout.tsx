@@ -1,9 +1,18 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
-import { AppShell, Burger, Skeleton } from '@mantine/core';
+import {
+  AppShell,
+  Burger,
+  Skeleton,
+  Menu,
+  useMantineColorScheme,
+  Modal,
+  Button,
+} from '@mantine/core';
 import Avatar from './Avatar';
 import { useDisclosure } from '@mantine/hooks';
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
+import { Session } from 'next-auth';
 
 export default function Sidebar({ children }: PropsWithChildren) {
   const [opened, { toggle }] = useDisclosure();
@@ -29,13 +38,7 @@ export default function Sidebar({ children }: PropsWithChildren) {
               hiddenFrom="sm"
               size="sm"
             />
-            <Avatar
-              alt="profile picture"
-              className="justify-self-end col-start-2"
-              src={session?.user?.image}
-            >
-              DM
-            </Avatar>
+            <AvatarDropdown session={session} />
           </div>
         </AppShell.Header>
         <AppShell.Navbar p="md" w={{ base: 250, sm: 300 }}>
@@ -51,3 +54,48 @@ export default function Sidebar({ children }: PropsWithChildren) {
     </>
   );
 }
+
+const AvatarDropdown = ({ session }: { session: Session | null }) => {
+  const { toggleColorScheme } = useMantineColorScheme();
+  const [opened, { open, close }] = useDisclosure(false);
+  return (
+    <>
+      <Menu>
+        <Menu.Target>
+          <a className="justify-self-end col-start-2 cursor-pointer">
+            <Avatar alt="profile picture" src={session?.user?.image}>
+              DM
+            </Avatar>
+          </a>
+        </Menu.Target>
+        <Menu.Dropdown>
+          <Menu.Label>Options</Menu.Label>
+          <Menu.Item onClick={() => toggleColorScheme()}>
+            Theme Toggle
+          </Menu.Item>
+          <Menu.Item component="a" onClick={open}>
+            Sign out
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+      <Modal
+        opened={opened}
+        onClose={close}
+        classNames={{ body: 'flex flex-col justify-center items-center' }}
+        centered
+        withCloseButton={false}
+        radius="lg"
+      >
+        <p>Are you sure?</p>
+        <div className="flex flex-row gap-2 pt-5">
+          <Button color="cyan.8" onClick={() => signOut()}>
+            Yes
+          </Button>
+          <Button color="gray" onClick={close}>
+            Cancel
+          </Button>
+        </div>
+      </Modal>
+    </>
+  );
+};
