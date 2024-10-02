@@ -1,10 +1,13 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
-import { AppShell, Burger, Skeleton, Avatar } from '@mantine/core';
+import { AppShell, Burger, Skeleton } from '@mantine/core';
+import Avatar from './Avatar';
 import { useDisclosure } from '@mantine/hooks';
+import { useSession } from 'next-auth/react';
 
 export default function Sidebar({ children }: PropsWithChildren) {
   const [opened, { toggle }] = useDisclosure();
+  const { data: session } = useSession();
 
   return (
     <>
@@ -26,7 +29,13 @@ export default function Sidebar({ children }: PropsWithChildren) {
               hiddenFrom="sm"
               size="sm"
             />
-            <Avatar className="justify-self-end col-start-2">DM</Avatar>
+            <Avatar
+              alt="profile picture"
+              className="justify-self-end col-start-2"
+              src={session?.user?.image}
+            >
+              DM
+            </Avatar>
           </div>
         </AppShell.Header>
         <AppShell.Navbar p="md" w={{ base: 250, sm: 300 }}>

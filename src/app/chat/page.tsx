@@ -2,9 +2,8 @@ import ChatInput from '@/components/ChatInput';
 import React from 'react';
 import { dummyMessages } from '@/lib/dummy-messages';
 import ChatMessageList from '@/components/ChatMessageList';
-import { socket } from '@/socket';
 
-export default function Chat() {
+export default async function Chat() {
   return (
     <div className="h-full">
       <h1 className="text-xl font-semibold">Global Chat</h1>
