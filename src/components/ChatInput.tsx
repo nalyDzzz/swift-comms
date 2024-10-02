@@ -5,6 +5,7 @@ import { BsEmojiSmile } from 'react-icons/bs';
 import EmojiPicker, { EmojiStyle, Theme } from 'emoji-picker-react';
 import { useClickOutside } from '@mantine/hooks';
 import { cn } from '@/lib/utils';
+import { socket } from '@/socket';
 
 export default function ChatInput(
   props: React.ComponentPropsWithoutRef<'textarea'>
@@ -21,7 +22,13 @@ export default function ChatInput(
     setValue(value + emoji);
     setOpen(false);
   };
+
   useClickOutside(() => setOpen(false), null, [button, picker]);
+
+  const sendMessage = () => {
+    socket.emit('message', value);
+    setValue('');
+  };
 
   return (
     <div className={cn('relative', props.className)}>
@@ -58,6 +65,7 @@ export default function ChatInput(
           onEmojiClick={(e) => handleEmojiPick(e.emoji)}
         />
       </div>
+      <button onClick={sendMessage}>send</button>
     </div>
   );
 }
