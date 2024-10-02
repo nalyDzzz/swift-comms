@@ -28,10 +28,19 @@ app.prepare().then(() => {
       console.log(`User ${socket.id} left room: ${room}`);
     });
 
-    socket.on('message', ({ room, msg }) => {
-      io.to(room).emit('message', msg);
-      addMessage(room, msg);
-    });
+    socket.on(
+      'message',
+      ({
+        room,
+        msg,
+      }: {
+        room: number;
+        msg: { message: string; author: string; date: Date };
+      }) => {
+        addMessage(room, msg);
+        io.to(`${room}`).emit('message', msg);
+      }
+    );
 
     socket.on('disconnect', () => {
       console.log('a user disconnected');

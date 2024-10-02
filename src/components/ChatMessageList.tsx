@@ -21,7 +21,7 @@ const ChatMessageList = ({
   }, []);
 
   useEffect(() => {
-    socket.emit('joinRoom', roomId);
+    socket.emit('joinRoom', roomId.toString());
     socket.on('message', (msg: Message) => {
       setMessages((prevMessages) => [...prevMessages, msg]);
     });

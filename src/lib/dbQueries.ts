@@ -20,3 +20,27 @@ export async function addUserToDb(email: string, name: string) {
     return false;
   }
 }
+
+export async function addMessage(
+  roomId: number,
+  message: { message: string; author: string; date: Date }
+) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: message.author },
+      select: { id: true },
+    });
+    if (!user) throw new Error('Cannot find user');
+    const result = await prisma.message.create({
+      data: {
+        date: message.date,
+        authorId: user.id,
+        content: message.message,
+        chatroomId: roomId,
+      },
+    });
+    if (!result) throw new Error('Cannot add message to DB');
+  } catch (error) {
+    if (error) console.error(error);
+  }
+}
