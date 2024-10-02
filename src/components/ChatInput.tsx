@@ -6,10 +6,14 @@ import EmojiPicker, { EmojiStyle, Theme } from 'emoji-picker-react';
 import { useClickOutside } from '@mantine/hooks';
 import { cn } from '@/lib/utils';
 import { socket } from '@/socket';
+import { useSession } from 'next-auth/react';
 
-export default function ChatInput(
-  props: React.ComponentPropsWithoutRef<'textarea'>
-) {
+type ChatInputProps = {
+  roomId: number;
+} & React.ComponentPropsWithoutRef<'textarea'>;
+
+export default function ChatInput({ roomId, ...props }: ChatInputProps) {
+  const { data: session } = useSession();
   const [button, setButton] = useState<HTMLDivElement | null>(null);
   const [picker, setPicker] = useState<HTMLDivElement | null>(null);
   const { colorScheme } = useMantineColorScheme();
@@ -26,7 +30,13 @@ export default function ChatInput(
   useClickOutside(() => setOpen(false), null, [button, picker]);
 
   const sendMessage = () => {
-    socket.emit('message', value);
+    const date = new Date();
+    const msg: { message: string; author: string; date: Date } = {
+      message: value,
+      author: session?.user?.name as string,
+      date: date,
+    };
+    socket.emit('message', { room: roomId, msg });
     setValue('');
   };
 

@@ -6,11 +6,13 @@ import { socket } from '@/socket';
 
 const ChatMessageList = ({
   initialMessages,
+  roomId,
 }: {
   initialMessages: Message[];
+  roomId: number;
 }) => {
   const messagesEnd = useRef<HTMLDivElement | null>(null);
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const scrollToBottom = () => {
     messagesEnd.current?.scrollIntoView({ behavior: 'instant' });
   };
@@ -19,14 +21,16 @@ const ChatMessageList = ({
   }, []);
 
   useEffect(() => {
-    socket.on('message', (msg: string) => {
+    socket.emit('joinRoom', roomId);
+    socket.on('message', (msg: Message) => {
       setMessages((prevMessages) => [...prevMessages, msg]);
     });
 
     return () => {
+      socket.emit('leaveRoom', roomId);
       socket.off('message');
     };
-  }, []);
+  }, [roomId]);
 
   useEffect(() => {
     scrollToBottom();
@@ -36,8 +40,8 @@ const ChatMessageList = ({
       {initialMessages.map((e, i) => (
         <ChatBubble message={e} key={i} />
       ))}
-      {messages.map((e) => (
-        <p>{e}</p>
+      {messages.map((e, i) => (
+        <ChatBubble message={e} key={i} />
       ))}
       <div className="absolute bottom-0" ref={messagesEnd}></div>
     </div>

@@ -16,9 +16,19 @@ app.prepare().then(() => {
 
   io.on('connection', (socket) => {
     console.log(socket.id);
-    socket.on('message', (msg) => {
-      console.log(msg);
-      io.emit('message', msg);
+
+    socket.on('joinRoom', (room) => {
+      socket.join(room);
+      console.log('user joined room');
+    });
+
+    socket.on('leaveRoom', (room) => {
+      socket.leave(room);
+      console.log(`User ${socket.id} left room: ${room}`);
+    });
+
+    socket.on('message', ({ room, msg }) => {
+      io.to(room).emit('message', msg);
     });
 
     socket.on('disconnect', () => {
