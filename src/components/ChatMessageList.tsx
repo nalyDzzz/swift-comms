@@ -21,14 +21,16 @@ const ChatMessageList = ({
   useEffect(() => {
     socket.on('message', (msg: string) => {
       setMessages((prevMessages) => [...prevMessages, msg]);
-      scrollToBottom();
-      console.log(messages);
     });
 
     return () => {
       socket.off('message');
     };
   }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
   return (
     <div className=" w-full h-[92%] flex flex-col gap-10 overflow-y-scroll p-10 relative">
       {initialMessages.map((e, i) => (
