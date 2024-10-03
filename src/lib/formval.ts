@@ -23,7 +23,6 @@ export const addUsername = async (prevState: any, formData: FormData) => {
   const validateFields = schema.safeParse({
     username: formData.get('username'),
   });
-  console.log(validateFields.error);
   if (!validateFields.success) {
     return {
       errors: validateFields.error.issues,
