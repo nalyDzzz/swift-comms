@@ -38,14 +38,14 @@ const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
         </Avatar>
         <div className="flex flex-col w-full max-w-[320px] leading-1.5">
           <div className="flex items-center space-x-2 rtl:space-x-reverse">
-            <span className="text-sm font-semibold text-gray-900 dark:text-white">
+            <span className="text-sm font-semibold text-dark-9 dark:text-dark-1">
               {message.author.name}
             </span>
-            <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+            <span className="text-xs font-normal text-dark-4 dark:text-dark-3">
               {dateFormat()}
             </span>
           </div>
-          <p className="text-sm font-normal py-2 text-gray-900 dark:text-white">
+          <p className="text-sm font-normal py-2 text-dark-9 dark:text-dark-1">
             {message.content}
           </p>
         </div>

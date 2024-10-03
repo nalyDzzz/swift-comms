@@ -37,7 +37,7 @@ const ChatMessageList = ({
   }, [messages]);
   return (
     <div
-      className=" w-full h-[92%] flex flex-col gap-10 overflow-y-scroll p-10 relative"
+      className=" w-full h-[92%] flex flex-col gap-10 overflow-y-scroll md:p-10 relative"
       ref={messageDiv}
     >
       {initialMessages.map((e, i) => (

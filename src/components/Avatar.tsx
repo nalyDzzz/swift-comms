@@ -16,13 +16,13 @@ const Avatar = ({ src, alt, children, className }: AvatarProps) => {
   return (
     <span
       className={cn(
-        'w-10 h-10 rounded-full bg-gray-950 font-semibold flex justify-center items-center relative',
+        'w-10 h-10 rounded-full dark:bg-dark-3 bg-dark-1 dark:text-dark-1 text-dark-9 font-semibold flex justify-center items-center relative',
         className
       )}
     >
       {!error && (
         <Image
-          src={src ? src : ''}
+          src={src || ''}
           fill
           alt={alt}
           onError={() => setError(true)}
