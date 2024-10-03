@@ -10,7 +10,9 @@ export default function Login() {
   return (
     <div>
       <h1>Sign in</h1>
-      <button onClick={() => signIn('github')}>Sign in with Github</button>
+      <button onClick={() => signIn('github', { callbackUrl: '/chat' })}>
+        Sign in with Github
+      </button>
     </div>
   );
 }
