@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Textarea, useMantineColorScheme } from '@mantine/core';
 import { BsEmojiSmile } from 'react-icons/bs';
 import EmojiPicker, { EmojiStyle, Theme } from 'emoji-picker-react';
-import { useClickOutside } from '@mantine/hooks';
+import { getHotkeyHandler, useClickOutside } from '@mantine/hooks';
 import { cn } from '@/lib/utils';
 import { socket } from '@/socket';
 import { useSession } from 'next-auth/react';
@@ -56,10 +56,11 @@ export default function ChatInput({ roomId, ...props }: ChatInputProps) {
           </div>
         }
         rightSectionPointerEvents="all"
-        autosize
         minRows={1}
+        rows={1}
         value={value}
         onChange={(e) => setValue(e.currentTarget.value)}
+        onKeyDown={getHotkeyHandler([['Enter', sendMessage]])}
       />
       <div
         ref={setPicker}
@@ -79,7 +80,6 @@ export default function ChatInput({ roomId, ...props }: ChatInputProps) {
           onEmojiClick={(e) => handleEmojiPick(e.emoji)}
         />
       </div>
-      <button onClick={sendMessage}>send</button>
     </div>
   );
 }
