@@ -45,7 +45,10 @@ const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
               {dateFormat()}
             </span>
           </div>
-          <p className="text-sm font-normal py-2 text-dark-9 dark:text-dark-1">
+          <p
+            className="text-sm font-normal py-2 text-dark-9 dark:text-dark-1"
+            style={{ whiteSpace: 'pre-line' }}
+          >
             {message.content}
           </p>
         </div>

@@ -31,6 +31,7 @@ export default function ChatInput({ roomId, ...props }: ChatInputProps) {
   useClickOutside(() => setOpen(false), null, [button, picker]);
 
   const sendMessage = () => {
+    if (value.trim() === '') return;
     const date = new Date();
     const msg: initialMessages = {
       content: value,
@@ -57,8 +58,7 @@ export default function ChatInput({ roomId, ...props }: ChatInputProps) {
         }
         placeholder="Type something"
         rightSectionPointerEvents="all"
-        minRows={1}
-        rows={1}
+        autosize
         value={value}
         onChange={(e) => setValue(e.currentTarget.value)}
         onKeyDown={getHotkeyHandler([['Enter', sendMessage]])}
