@@ -35,7 +35,7 @@ export default function ChatInput({ roomId, ...props }: ChatInputProps) {
     const msg: initialMessages = {
       content: value,
       author: {
-        name: session?.user?.email as string,
+        name: session?.user?.username as string,
         picture: session?.user?.image,
       },
       date: date,

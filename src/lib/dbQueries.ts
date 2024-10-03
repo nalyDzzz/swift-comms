@@ -27,10 +27,23 @@ export async function addUserToDb(
   }
 }
 
+export async function getUsername(email: string) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { username: true },
+    });
+    if (!user) throw new Error('Cannot find user');
+    return user;
+  } catch (error) {
+    if (error) console.error(error);
+  }
+}
+
 export async function addMessage(roomId: number, message: initialMessages) {
   try {
     const user = await prisma.user.findUnique({
-      where: { email: message.author.name as string },
+      where: { username: message.author.name as string },
       select: { id: true },
     });
     if (!user) throw new Error('Cannot find user');

@@ -39,7 +39,7 @@ const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
         <div className="flex flex-col w-full max-w-[320px] leading-1.5">
           <div className="flex items-center space-x-2 rtl:space-x-reverse">
             <span className="text-sm font-semibold text-dark-9 dark:text-dark-1">
-              {message.author.name}
+              {message.author.username ?? message.author.name}
             </span>
             <span className="text-xs font-normal text-dark-4 dark:text-dark-3">
               {dateFormat()}
