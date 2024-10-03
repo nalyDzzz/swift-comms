@@ -40,6 +40,29 @@ export async function getUsername(email: string) {
   }
 }
 
+export async function addUsernameDb(email: string, username: string) {
+  try {
+    const existingUser = await prisma.user.findFirst({
+      where: { username: { equals: username, mode: 'insensitive' } },
+    });
+    if (existingUser) throw new Error('Username already exists');
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (user && !user.username) {
+      const result = await prisma.user.update({
+        where: { email },
+        data: { username },
+      });
+      if (!result) throw new Error('Error adding username');
+      return 'Success';
+    } else {
+      return 'User already has a username';
+    }
+  } catch (error) {
+    if (error) console.error(error);
+    return 'Username is taken';
+  }
+}
+
 export async function addMessage(roomId: number, message: initialMessages) {
   try {
     const user = await prisma.user.findUnique({
