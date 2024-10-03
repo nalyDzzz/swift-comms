@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import '@mantine/core/styles.css';
 import '@/styles/globals.css';
-import ThemeProvider from './providers';
+import Providers from './providers';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="h-screen overflow-y-hidden">
-        <ThemeProvider>{children}</ThemeProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

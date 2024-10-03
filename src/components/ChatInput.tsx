@@ -55,6 +55,7 @@ export default function ChatInput({ roomId, ...props }: ChatInputProps) {
             <EmojiButton onClick={handleClick} />
           </div>
         }
+        placeholder="Type something"
         rightSectionPointerEvents="all"
         minRows={1}
         rows={1}
