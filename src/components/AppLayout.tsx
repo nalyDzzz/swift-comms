@@ -1,5 +1,5 @@
 'use client';
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useState } from 'react';
 import {
   AppShell,
   Burger,
@@ -8,11 +8,15 @@ import {
   useMantineColorScheme,
   Modal,
   Button,
+  Popover,
+  TextInput,
 } from '@mantine/core';
 import Avatar from './Avatar';
 import { useDisclosure } from '@mantine/hooks';
 import { signOut, useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
+import { addChatroom } from '@/lib/formval';
+import { useFormState } from 'react-dom';
 
 export default function Sidebar({ children }: PropsWithChildren) {
   const [opened, { toggle }] = useDisclosure();
@@ -42,7 +46,7 @@ export default function Sidebar({ children }: PropsWithChildren) {
           </div>
         </AppShell.Header>
         <AppShell.Navbar p="md" w={{ base: 250, sm: 300 }}>
-          Navbar
+          <NavContent />
           {Array(15)
             .fill(0)
             .map((_, index) => (
@@ -97,5 +101,43 @@ const AvatarDropdown = ({ session }: { session: Session | null }) => {
         </div>
       </Modal>
     </>
+  );
+};
+
+const NavContent = () => {
+  return <CreateRoomButton />;
+};
+
+const CreateRoomButton = () => {
+  const initialState = { errors: [] };
+  const [opened, setOpened] = useState(false);
+  const [state, formAction] = useFormState(addChatroom, initialState);
+  const [value, setValue] = useState('');
+  return (
+    <Popover opened={opened} onChange={setOpened}>
+      <Popover.Target>
+        <Button variant="outline" onClick={() => setOpened(!opened)}>
+          Create Chat Room
+        </Button>
+      </Popover.Target>
+      <Popover.Dropdown>
+        <form
+          action={async (formData) => {
+            await formAction(formData);
+            setValue('');
+            setOpened(false);
+          }}
+        >
+          <TextInput
+            label="Pick a name"
+            placeholder="My Chatroom"
+            error={state?.errors[0]?.message}
+            name="chatroom"
+            onChange={(e) => setValue(e.target.value)}
+            value={value}
+          />
+        </form>
+      </Popover.Dropdown>
+    </Popover>
   );
 };

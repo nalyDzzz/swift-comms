@@ -63,6 +63,23 @@ export async function addUsernameDb(email: string, username: string) {
   }
 }
 
+export async function addChatroomDb(email: string, chatroom: string) {
+  try {
+    const result = await prisma.chatroom.create({
+      data: {
+        name: chatroom,
+        User: { connect: { email } },
+      },
+      include: { User: true },
+    });
+    if (!result) throw new Error('Error creating chatroom');
+    return 'Success';
+  } catch (error) {
+    if (error) console.error(error);
+    return 'Error';
+  }
+}
+
 export async function addMessage(roomId: number, message: initialMessages) {
   try {
     const user = await prisma.user.findUnique({
