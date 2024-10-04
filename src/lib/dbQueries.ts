@@ -80,6 +80,17 @@ export async function addChatroomDb(email: string, chatroom: string) {
   }
 }
 
+export async function getChatrooms(email: string) {
+  try {
+    const chatrooms = await prisma.chatroom.findMany({
+      where: { User: { some: { email } } },
+    });
+    return chatrooms;
+  } catch (error) {
+    if (error) console.error(error);
+  }
+}
+
 export async function addMessage(roomId: number, message: initialMessages) {
   try {
     const user = await prisma.user.findUnique({

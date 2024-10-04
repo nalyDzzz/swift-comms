@@ -1,5 +1,5 @@
 'use client';
-import React, { PropsWithChildren, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useState } from 'react';
 import {
   AppShell,
   Burger,
@@ -17,6 +17,8 @@ import { signOut, useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
 import { addChatroom } from '@/lib/formval';
 import { useFormState } from 'react-dom';
+import { getChatrooms } from '@/lib/dbQueries';
+import Link from 'next/link';
 
 export default function Sidebar({ children }: PropsWithChildren) {
   const [opened, { toggle }] = useDisclosure();
@@ -105,7 +107,27 @@ const AvatarDropdown = ({ session }: { session: Session | null }) => {
 };
 
 const NavContent = () => {
-  return <CreateRoomButton />;
+  const { data: session } = useSession();
+  const [chatrooms, setChatrooms] = useState<{ id: number; name: string }[]>();
+  const email = session?.user.email as string;
+
+  useEffect(() => {
+    getChatrooms(email).then((d) => {
+      if (!d) throw new Error('test');
+      return setChatrooms(d);
+    });
+  }, [email]);
+
+  return (
+    <>
+      <CreateRoomButton />
+      {chatrooms?.map((e) => (
+        <Link href={e.id === 1 ? '/chat' : `/chat/${e.id}`} key={e.id}>
+          <Button variant="transparent">{e.name}</Button>
+        </Link>
+      ))}
+    </>
+  );
 };
 
 const CreateRoomButton = () => {
