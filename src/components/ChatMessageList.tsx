@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
 import ChatBubble from './ChatBubble';
-import { socket } from '@/socket';
+import { useSocket } from './SocketProvider';
 import { initialMessages } from '@/lib/types';
 
 const ChatMessageList = ({
@@ -11,6 +11,7 @@ const ChatMessageList = ({
   initialMessages: initialMessages[];
   roomId: number;
 }) => {
+  const { socket, joinRoom, leaveRoom } = useSocket();
   const messageDiv = useRef<HTMLDivElement | null>(null);
   const [messages, setMessages] = useState<initialMessages[]>([]);
   const scrollToBottom = () => {
@@ -21,16 +22,26 @@ const ChatMessageList = ({
   }, []);
 
   useEffect(() => {
-    socket.emit('joinRoom', roomId.toString());
-    socket.on('message', (msg: initialMessages) => {
-      setMessages((prevMessages) => [...prevMessages, msg]);
-    });
+    joinRoom(roomId.toString());
 
     return () => {
-      socket.emit('leaveRoom', roomId);
-      socket.off('message');
+      leaveRoom(roomId.toString());
     };
-  }, [roomId]);
+  }, [roomId, joinRoom, leaveRoom]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('message', (msg: initialMessages) => {
+        setMessages((prevMessages) => [...prevMessages, msg]);
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.off('message');
+      }
+    };
+  }, [socket]);
 
   useEffect(() => {
     scrollToBottom();

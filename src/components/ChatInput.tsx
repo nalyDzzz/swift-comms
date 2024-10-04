@@ -5,7 +5,7 @@ import { BsEmojiSmile } from 'react-icons/bs';
 import EmojiPicker, { EmojiStyle, Theme } from 'emoji-picker-react';
 import { getHotkeyHandler, useClickOutside } from '@mantine/hooks';
 import { cn } from '@/lib/utils';
-import { socket } from '@/socket';
+import { useSocket } from './SocketProvider';
 import { useSession } from 'next-auth/react';
 import { initialMessages } from '@/lib/types';
 
@@ -14,6 +14,7 @@ type ChatInputProps = {
 } & React.ComponentPropsWithoutRef<'textarea'>;
 
 export default function ChatInput({ roomId, ...props }: ChatInputProps) {
+  const { socket } = useSocket();
   const { data: session } = useSession();
   const [button, setButton] = useState<HTMLDivElement | null>(null);
   const [picker, setPicker] = useState<HTMLDivElement | null>(null);
@@ -41,7 +42,7 @@ export default function ChatInput({ roomId, ...props }: ChatInputProps) {
       },
       date: date,
     };
-    socket.emit('message', { room: roomId, msg });
+    if (socket) socket.emit('message', { room: roomId, msg });
     setValue('');
   };
 
