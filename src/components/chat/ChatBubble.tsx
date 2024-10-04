@@ -1,7 +1,7 @@
 import { initialMessages } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import React from 'react';
-import Avatar from './Avatar';
+import Avatar from '@/components/Avatar';
 import { isToday, isYesterday } from 'date-fns';
 import { toZonedTime, format as formatTz } from 'date-fns-tz';
 

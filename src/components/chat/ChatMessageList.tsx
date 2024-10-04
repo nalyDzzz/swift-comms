@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
-import ChatBubble from './ChatBubble';
-import { useSocket } from './SocketProvider';
+import ChatBubble from '@/components/chat/ChatBubble';
+import { useSocket } from '@/components/SocketProvider';
 import { initialMessages } from '@/lib/types';
 
 const ChatMessageList = ({

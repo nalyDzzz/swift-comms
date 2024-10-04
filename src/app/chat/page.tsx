@@ -1,6 +1,6 @@
-import ChatInput from '@/components/ChatInput';
+import ChatInput from '@/components/chat/ChatInput';
 import React from 'react';
-import ChatMessageList from '@/components/ChatMessageList';
+import ChatMessageList from '@/components/chat/ChatMessageList';
 import { getMessages } from '@/lib/dbQueries';
 import { initialMessages } from '@/lib/types';
 import { auth } from '@/lib/auth';
