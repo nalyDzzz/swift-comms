@@ -1,8 +1,9 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import ChatBubble from '@/components/chat/ChatBubble';
 import { useSocket } from '@/components/SocketProvider';
 import { initialMessages } from '@/lib/types';
+import { useMessages } from '@/components/MessageProvider';
 
 const ChatMessageList = ({
   initialMessages,
@@ -13,13 +14,13 @@ const ChatMessageList = ({
 }) => {
   const { socket, joinRoom, leaveRoom } = useSocket();
   const messageDiv = useRef<HTMLDivElement | null>(null);
-  const [messages, setMessages] = useState<initialMessages[]>([]);
+  const { realTimeMessages, addRealTimeMessage } = useMessages();
   const scrollToBottom = () => {
     messageDiv.current?.scrollTo(0, messageDiv.current.scrollHeight);
   };
   useEffect(() => {
     scrollToBottom();
-  }, []);
+  }, [realTimeMessages]);
 
   useEffect(() => {
     joinRoom(roomId.toString());
@@ -32,7 +33,7 @@ const ChatMessageList = ({
   useEffect(() => {
     if (socket) {
       socket.on('message', (msg: initialMessages) => {
-        setMessages((prevMessages) => [...prevMessages, msg]);
+        addRealTimeMessage(roomId, msg);
       });
     }
 
@@ -41,11 +42,8 @@ const ChatMessageList = ({
         socket.off('message');
       }
     };
-  }, [socket]);
+  }, [socket, roomId, addRealTimeMessage]);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
   return (
     <div
       className=" w-full h-[92%] flex flex-col gap-10 overflow-y-scroll md:p-10 relative"
@@ -54,7 +52,7 @@ const ChatMessageList = ({
       {initialMessages.map((e, i) => (
         <ChatBubble message={e} key={i} />
       ))}
-      {messages.map((e, i) => (
+      {realTimeMessages[roomId]?.map((e, i) => (
         <ChatBubble message={e} key={i} />
       ))}
     </div>

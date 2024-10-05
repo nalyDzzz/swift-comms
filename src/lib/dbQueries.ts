@@ -1,7 +1,7 @@
 'use server';
 import prisma from '@/app/api/db';
 import { initialMessages } from './types';
-// import { getServerSession } from 'next-auth';
+import { revalidatePath } from 'next/cache';
 
 export async function addUserToDb(
   email: string,
@@ -73,6 +73,7 @@ export async function addChatroomDb(email: string, chatroom: string) {
       include: { User: true },
     });
     if (!result) throw new Error('Error creating chatroom');
+    revalidatePath('/chat');
     return 'Success';
   } catch (error) {
     if (error) console.error(error);
@@ -84,6 +85,7 @@ export async function getChatrooms(email: string) {
   try {
     const chatrooms = await prisma.chatroom.findMany({
       where: { User: { some: { email } } },
+      orderBy: { id: 'asc' },
     });
     return chatrooms;
   } catch (error) {

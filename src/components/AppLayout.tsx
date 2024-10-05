@@ -1,9 +1,8 @@
 'use client';
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useState } from 'react';
 import {
   AppShell,
   Burger,
-  Skeleton,
   Menu,
   useMantineColorScheme,
   Modal,
@@ -17,10 +16,20 @@ import { signOut, useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
 import { addChatroom } from '@/lib/formval';
 import { useFormState } from 'react-dom';
-import { getChatrooms } from '@/lib/dbQueries';
 import Link from 'next/link';
 
-export default function Sidebar({ children }: PropsWithChildren) {
+type Chatroom =
+  | {
+      id: number;
+      name: string;
+    }[]
+  | undefined;
+
+type AppLayoutProps = PropsWithChildren & {
+  chatrooms: Chatroom;
+};
+
+export default function AppLayout({ children, chatrooms }: AppLayoutProps) {
   const [opened, { toggle }] = useDisclosure();
   const { data: session } = useSession();
 
@@ -48,12 +57,7 @@ export default function Sidebar({ children }: PropsWithChildren) {
           </div>
         </AppShell.Header>
         <AppShell.Navbar p="md" w={{ base: 250, sm: 300 }}>
-          <NavContent />
-          {Array(15)
-            .fill(0)
-            .map((_, index) => (
-              <Skeleton key={index} h={28} mt="sm" animate={false} />
-            ))}
+          <NavContent chatrooms={chatrooms} />
         </AppShell.Navbar>
         <AppShell.Main className="h-full">{children}</AppShell.Main>
       </AppShell>
@@ -106,18 +110,7 @@ const AvatarDropdown = ({ session }: { session: Session | null }) => {
   );
 };
 
-const NavContent = () => {
-  const { data: session } = useSession();
-  const [chatrooms, setChatrooms] = useState<{ id: number; name: string }[]>();
-  const email = session?.user.email as string;
-
-  useEffect(() => {
-    getChatrooms(email).then((d) => {
-      if (!d) throw new Error('test');
-      return setChatrooms(d);
-    });
-  }, [email]);
-
+const NavContent = ({ chatrooms }: { chatrooms: Chatroom }) => {
   return (
     <>
       <CreateRoomButton />
