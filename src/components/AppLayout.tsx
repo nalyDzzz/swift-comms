@@ -1,5 +1,5 @@
 'use client';
-import React, { PropsWithChildren, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useState } from 'react';
 import {
   AppShell,
   Burger,
@@ -9,6 +9,7 @@ import {
   Button,
   Popover,
   TextInput,
+  NavLink,
 } from '@mantine/core';
 import Avatar from './Avatar';
 import { useDisclosure } from '@mantine/hooks';
@@ -17,6 +18,7 @@ import { Session } from 'next-auth';
 import { addChatroom } from '@/lib/formval';
 import { useFormState } from 'react-dom';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 type Chatroom =
   | {
@@ -111,12 +113,27 @@ const AvatarDropdown = ({ session }: { session: Session | null }) => {
 };
 
 const NavContent = ({ chatrooms }: { chatrooms: Chatroom }) => {
+  const path = usePathname();
+
+  const activeCheck = (e: { id: number; name: string }) => {
+    if ((path === '/chat' && e.name === 'Global') || path === `/chat/${e.id}`) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   return (
     <>
       <CreateRoomButton />
       {chatrooms?.map((e) => (
         <Link href={e.id === 1 ? '/chat' : `/chat/${e.id}`} key={e.id}>
-          <Button variant="transparent">{e.name}</Button>
+          <NavLink
+            component="div"
+            label={e.name}
+            active={activeCheck(e)}
+            autoContrast
+          />
         </Link>
       ))}
     </>
@@ -128,6 +145,13 @@ const CreateRoomButton = () => {
   const [opened, setOpened] = useState(false);
   const [state, formAction] = useFormState(addChatroom, initialState);
   const [value, setValue] = useState('');
+
+  useEffect(() => {
+    if (state?.errors.length === 0 || !state?.errors) {
+      setOpened(false);
+    }
+  }, [state?.errors, formAction]);
+
   return (
     <Popover opened={opened} onChange={setOpened}>
       <Popover.Target>
@@ -140,7 +164,6 @@ const CreateRoomButton = () => {
           action={async (formData) => {
             await formAction(formData);
             setValue('');
-            setOpened(false);
           }}
         >
           <TextInput
