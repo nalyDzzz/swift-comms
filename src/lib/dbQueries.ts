@@ -81,6 +81,25 @@ export async function addChatroomDb(email: string, chatroom: string) {
   }
 }
 
+export async function editChatroomName(id: number, name: string) {
+  try {
+    const result = await prisma.chatroom.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+      },
+    });
+    if (!result) throw new Error('Error editing chatroom');
+    revalidatePath('/chat');
+    return 'Success';
+  } catch (error) {
+    if (error) console.error(error);
+    return 'Error';
+  }
+}
+
 export async function getChatrooms(email: string) {
   try {
     const chatrooms = await prisma.chatroom.findMany({

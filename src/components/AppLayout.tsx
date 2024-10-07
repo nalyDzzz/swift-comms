@@ -1,5 +1,10 @@
 'use client';
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import React, {
+  FormEvent,
+  PropsWithChildren,
+  useEffect,
+  useState,
+} from 'react';
 import {
   AppShell,
   Burger,
@@ -10,15 +15,19 @@ import {
   Popover,
   TextInput,
   NavLink,
+  ActionIcon,
 } from '@mantine/core';
 import Avatar from './Avatar';
 import { useDisclosure } from '@mantine/hooks';
 import { signOut, useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
-import { addChatroom } from '@/lib/formval';
+import { addChatroom, editChatroom } from '@/lib/formval';
 import { useFormState } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { IoIosSettings } from 'react-icons/io';
+import { FaUserFriends } from 'react-icons/fa';
+import { cn } from '@/lib/utils';
 
 type Chatroom =
   | {
@@ -127,16 +136,93 @@ const NavContent = ({ chatrooms }: { chatrooms: Chatroom }) => {
     <>
       <CreateRoomButton />
       {chatrooms?.map((e) => (
-        <Link href={e.id === 1 ? '/chat' : `/chat/${e.id}`} key={e.id}>
+        <Link
+          href={e.id === 1 ? '/chat' : `/chat/${e.id}`}
+          key={e.id}
+          className="flex"
+        >
           <NavLink
             component="div"
             label={e.name}
             active={activeCheck(e)}
             autoContrast
+            className="group"
+            rightSection={<NavLinkRightSide chatroom={e} />}
           />
         </Link>
       ))}
     </>
+  );
+};
+
+const NavLinkRightSide = ({
+  chatroom,
+}: {
+  chatroom: { id: number; name: string };
+}) => {
+  return (
+    <div
+      className={cn(
+        { 'group-hover:visible': chatroom.id !== 1 },
+        'group invisible z-10'
+      )}
+    >
+      <ActionIcon aria-label="Invite Friend" variant="transparent">
+        <FaUserFriends />
+      </ActionIcon>
+      <ChangeNameModal chatroom={chatroom} />
+    </div>
+  );
+};
+
+const ChangeNameModal = ({
+  chatroom,
+}: {
+  chatroom: { id: number; name: string };
+}) => {
+  const initialState = { errors: [] };
+  const [opened, setOpened] = useState(false);
+  const [value, setValue] = useState('');
+  const [state, action] = useFormState(editChatroom, initialState);
+
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    formData.set('id', chatroom.id.toString());
+    action(formData);
+  };
+
+  useEffect(() => {
+    if (state?.errors.length === 0 || !state?.errors) {
+      setOpened(false);
+    }
+  }, [state?.errors, action]);
+
+  return (
+    <Popover opened={opened} onChange={setOpened}>
+      <Popover.Target>
+        <ActionIcon
+          aria-label="Edit"
+          variant="transparent"
+          onClick={() => setOpened((o) => !o)}
+        >
+          <IoIosSettings />
+        </ActionIcon>
+      </Popover.Target>
+      <Popover.Dropdown>
+        <form onSubmit={onSubmit}>
+          <TextInput
+            label="Edit name"
+            type="text"
+            placeholder="My Chatroom"
+            error={state?.errors[0]?.message}
+            name="chatroom"
+            onChange={(e) => setValue(e.target.value)}
+            value={value}
+          />
+        </form>
+      </Popover.Dropdown>
+    </Popover>
   );
 };
 

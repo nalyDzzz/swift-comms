@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { auth } from './auth';
-import { addChatroomDb, addUsernameDb } from './dbQueries';
+import { addChatroomDb, addUsernameDb, editChatroomName } from './dbQueries';
 
 const regex = /^[a-zA-Z0-9_]+$/;
 
@@ -62,6 +62,27 @@ export const addChatroom = async (prevState: any, formData: FormData) => {
   } else {
     const chatroom = formData.get('chatroom') as string;
     const result = await addChatroomDb(session.user.email, chatroom);
+    if (result === 'Error')
+      return { errors: [{ message: 'An error occured!' }] };
+    if (result === 'Success') revalidatePath('/chat');
+  }
+};
+
+export const editChatroom = async (prevState: any, formData: FormData) => {
+  console.log('called');
+  const session = await auth();
+  if (!session?.user.email) throw new Error('Not authorized');
+  const validateFields = chatroomSchema.safeParse({
+    chatroom: formData.get('chatroom'),
+  });
+  if (!validateFields.success) {
+    return {
+      errors: validateFields.error.issues,
+    };
+  } else {
+    const chatroom = formData.get('chatroom') as string;
+    const id = formData.get('id') as string;
+    const result = await editChatroomName(parseInt(id), chatroom);
     if (result === 'Error')
       return { errors: [{ message: 'An error occured!' }] };
     if (result === 'Success') revalidatePath('/chat');
