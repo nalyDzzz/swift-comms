@@ -1,5 +1,11 @@
 'use client';
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import io, { Socket } from 'socket.io-client';
 
 interface SocketContextProps {
@@ -23,7 +29,6 @@ export const useSocket = () => {
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [connected, setConnected] = useState(false);
-  const [room, setRoom] = useState<string | null>(null);
 
   useEffect(() => {
     const newSocket = io(process.env.NEXT_PUBLIC_SITE_URL!, {
@@ -47,21 +52,25 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
-  const joinRoom = (room: string) => {
-    if (room && socket) {
-      socket.emit('joinRoom', room);
-      setRoom(room);
-      console.log('Joined room: ', room);
-    }
-  };
+  const joinRoom = useCallback(
+    (roomId: string) => {
+      if (socket) {
+        socket.emit('joinRoom', roomId);
+        console.log(`Joined room: ${roomId}`);
+      }
+    },
+    [socket]
+  );
 
-  const leaveRoom = () => {
-    if (room && socket) {
-      socket.emit('leaveRoom', room);
-      console.log('Left room: ', room);
-      setRoom(null);
-    }
-  };
+  const leaveRoom = useCallback(
+    (roomId: string) => {
+      if (socket) {
+        socket.emit('leaveRoom', roomId);
+        console.log(`Left room: ${roomId}`);
+      }
+    },
+    [socket]
+  );
 
   return (
     <SocketContext.Provider value={{ socket, connected, joinRoom, leaveRoom }}>

@@ -32,7 +32,6 @@ export const MessageProvider = ({
       ...prevMessages,
       [roomId]: [...(prevMessages[roomId] || []), message],
     }));
-    console.log(realTimeMessages);
   };
 
   const clearRealTimeMessages = (roomId: number) => {
