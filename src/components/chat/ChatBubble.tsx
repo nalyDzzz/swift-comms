@@ -19,7 +19,7 @@ const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       } else if (isYesterday(date)) {
         return `Yesterday at ${formatTz(date, 'hh:mm a', { timeZone })}`;
       } else {
-        return formatTz(date, 'MMMM dd, yyyy hh:mm a', {
+        return formatTz(date, 'MM/dd/yyyy hh:mm a', {
           timeZone,
         });
       }

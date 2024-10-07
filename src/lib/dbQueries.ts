@@ -18,6 +18,9 @@ export async function addUserToDb(
           name,
           email,
           picture,
+          chatrooms: {
+            connect: { id: 1 },
+          },
         },
       });
     }
