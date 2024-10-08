@@ -17,6 +17,7 @@ import {
   NavLink,
   ActionIcon,
   Tooltip,
+  Indicator,
 } from '@mantine/core';
 import Avatar from './Avatar';
 import { useClickOutside, useDisclosure } from '@mantine/hooks';
@@ -31,6 +32,7 @@ import { FaUserFriends } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
 import { FaTrash } from 'react-icons/fa';
 import { deleteChatroom } from '@/lib/dbQueries';
+import { useSocket } from './SocketProvider';
 
 type Chatroom = {
   id: number;
@@ -81,14 +83,23 @@ export default function AppLayout({ children, chatrooms }: AppLayoutProps) {
 const AvatarDropdown = ({ session }: { session: Session | null }) => {
   const { toggleColorScheme } = useMantineColorScheme();
   const [opened, { open, close }] = useDisclosure(false);
+  const { connected } = useSocket();
   return (
     <>
       <Menu>
         <Menu.Target>
           <a className="justify-self-end col-start-2 cursor-pointer">
-            <Avatar alt="profile picture" src={session?.user?.image}>
-              DM
-            </Avatar>
+            <Indicator
+              position="bottom-end"
+              withBorder
+              size={15}
+              offset={5}
+              color={connected ? 'green' : 'red'}
+            >
+              <Avatar alt="profile picture" src={session?.user?.image}>
+                DM
+              </Avatar>
+            </Indicator>
           </a>
         </Menu.Target>
         <Menu.Dropdown>
