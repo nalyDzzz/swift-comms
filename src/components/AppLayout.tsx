@@ -27,6 +27,7 @@ import { cn } from '@/lib/utils';
 import { useSocket } from '@/components/context/SocketProvider';
 import { Chatroom } from '@/lib/types';
 import ChangeNameModal from '@/components/nav/ChangeNameModal';
+import Invites from './nav/Invites';
 
 type AppLayoutProps = PropsWithChildren & {
   chatrooms: Chatroom[] | undefined;
@@ -56,7 +57,10 @@ export default function AppLayout({ children, chatrooms }: AppLayoutProps) {
               hiddenFrom="sm"
               size="sm"
             />
-            <AvatarDropdown session={session} />
+            <div className="justify-self-end col-start-2 flex flex-row items-center gap-2">
+              <Invites />
+              <AvatarDropdown session={session} />
+            </div>
           </div>
         </AppShell.Header>
         <AppShell.Navbar p="md" w={{ base: 250, sm: 300 }}>
@@ -76,7 +80,7 @@ const AvatarDropdown = ({ session }: { session: Session | null }) => {
     <>
       <Menu>
         <Menu.Target>
-          <a className="justify-self-end col-start-2 cursor-pointer">
+          <a className="cursor-pointer">
             <Indicator
               position="bottom-end"
               withBorder
