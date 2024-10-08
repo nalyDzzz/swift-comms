@@ -16,6 +16,7 @@ import {
   TextInput,
   NavLink,
   ActionIcon,
+  Tooltip,
 } from '@mantine/core';
 import Avatar from './Avatar';
 import { useClickOutside, useDisclosure } from '@mantine/hooks';
@@ -164,9 +165,15 @@ const NavLinkRightSide = ({ chatroom }: { chatroom: Chatroom }) => {
         'group invisible z-50'
       )}
     >
-      <ActionIcon aria-label="Invite Friend" variant="transparent">
-        <FaUserFriends />
-      </ActionIcon>
+      <Tooltip
+        label="Invite Friend"
+        withArrow
+        transitionProps={{ transition: 'pop' }}
+      >
+        <ActionIcon aria-label="Invite Friend" variant="transparent">
+          <FaUserFriends />
+        </ActionIcon>
+      </Tooltip>
       <ChangeNameModal chatroom={chatroom} />
     </div>
   );
@@ -206,13 +213,19 @@ const ChangeNameModal = ({ chatroom }: { chatroom: Chatroom }) => {
   return (
     <Popover opened={opened} onChange={setOpened} withArrow>
       <Popover.Target>
-        <ActionIcon
-          aria-label="Edit"
-          variant="transparent"
-          onClick={() => setOpened((o) => !o)}
+        <Tooltip
+          label="Rename or Delete"
+          withArrow
+          transitionProps={{ transition: 'pop' }}
         >
-          <IoIosSettings />
-        </ActionIcon>
+          <ActionIcon
+            aria-label="Edit"
+            variant="transparent"
+            onClick={() => setOpened((o) => !o)}
+          >
+            <IoIosSettings />
+          </ActionIcon>
+        </Tooltip>
       </Popover.Target>
       <Popover.Dropdown>
         <div className="flex flex-col items-center gap-2">
