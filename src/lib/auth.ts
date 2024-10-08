@@ -1,7 +1,7 @@
 import NextAuth, { DefaultSession } from 'next-auth';
 import GitHub from 'next-auth/providers/github';
 import Google from 'next-auth/providers/google';
-import { addUserToDb, getUsername } from '@/lib/dbQueries';
+import { addUserToDb, getUser } from '@/lib/dbQueries';
 import type { Provider } from 'next-auth/providers';
 
 declare module 'next-auth' {
@@ -33,9 +33,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       return true;
     },
     async session({ session }) {
-      const user = await getUsername(session.user.email);
+      const user = await getUser(session.user.email);
       if (user && user.username) {
         session.user.username = user.username;
+        session.user.id = user.id.toString();
       }
       return session;
     },

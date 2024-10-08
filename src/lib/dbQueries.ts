@@ -30,11 +30,11 @@ export async function addUserToDb(
   }
 }
 
-export async function getUsername(email: string) {
+export async function getUser(email: string) {
   try {
     const user = await prisma.user.findUnique({
       where: { email },
-      select: { username: true },
+      select: { username: true, id: true },
     });
     if (!user) throw new Error('Cannot find user');
     return user;
@@ -72,6 +72,7 @@ export async function addChatroomDb(email: string, chatroom: string) {
       data: {
         name: chatroom,
         User: { connect: { email } },
+        Owner: { connect: { email } },
       },
       include: { User: true },
     });
@@ -100,6 +101,19 @@ export async function editChatroomName(id: number, name: string) {
   } catch (error) {
     if (error) console.error(error);
     return 'Error';
+  }
+}
+
+export async function deleteChatroom(id: number) {
+  try {
+    const result = await prisma.chatroom.delete({
+      where: { id },
+      include: { messages: true },
+    });
+    if (!result) throw new Error('Error deleting chatroom');
+    revalidatePath('/chat');
+  } catch (error) {
+    if (error) console.error(error);
   }
 }
 

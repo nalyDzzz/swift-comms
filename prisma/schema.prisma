@@ -14,14 +14,16 @@ model Message {
   content    String
   chatroomId Int
   author     User     @relation(fields: [authorId], references: [id])
-  Chatroom   Chatroom @relation(fields: [chatroomId], references: [id])
+  Chatroom   Chatroom @relation("ChatroomMessages",fields: [chatroomId], references: [id], onDelete: Cascade)
 }
 
 model Chatroom {
   id       Int       @id @default(autoincrement())
   name     String
-  messages Message[]
+  messages Message[] @relation("ChatroomMessages")
   User     User[]    @relation("ChatroomToUser")
+  OwnerId  Int
+  Owner    User     @relation("ChatroomOwnerToUser", fields: [OwnerId], references: [id])
 }
 
 model User {
@@ -32,4 +34,5 @@ model User {
   picture   String?
   messages  Message[]
   chatrooms Chatroom[] @relation("ChatroomToUser")
+  OwnedChatrooms Chatroom[] @relation("ChatroomOwnerToUser")
 }

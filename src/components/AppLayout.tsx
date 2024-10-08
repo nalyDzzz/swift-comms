@@ -18,7 +18,7 @@ import {
   ActionIcon,
 } from '@mantine/core';
 import Avatar from './Avatar';
-import { useDisclosure } from '@mantine/hooks';
+import { useClickOutside, useDisclosure } from '@mantine/hooks';
 import { signOut, useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
 import { addChatroom, editChatroom } from '@/lib/formval';
@@ -28,16 +28,17 @@ import { usePathname } from 'next/navigation';
 import { IoIosSettings } from 'react-icons/io';
 import { FaUserFriends } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
+import { FaTrash } from 'react-icons/fa';
+import { deleteChatroom } from '@/lib/dbQueries';
 
-type Chatroom =
-  | {
-      id: number;
-      name: string;
-    }[]
-  | undefined;
+type Chatroom = {
+  id: number;
+  name: string;
+  OwnerId: number;
+};
 
 type AppLayoutProps = PropsWithChildren & {
-  chatrooms: Chatroom;
+  chatrooms: Chatroom[] | undefined;
 };
 
 export default function AppLayout({ children, chatrooms }: AppLayoutProps) {
@@ -121,7 +122,7 @@ const AvatarDropdown = ({ session }: { session: Session | null }) => {
   );
 };
 
-const NavContent = ({ chatrooms }: { chatrooms: Chatroom }) => {
+const NavContent = ({ chatrooms }: { chatrooms: Chatroom[] | undefined }) => {
   const path = usePathname();
 
   const activeCheck = (e: { id: number; name: string }) => {
@@ -155,16 +156,12 @@ const NavContent = ({ chatrooms }: { chatrooms: Chatroom }) => {
   );
 };
 
-const NavLinkRightSide = ({
-  chatroom,
-}: {
-  chatroom: { id: number; name: string };
-}) => {
+const NavLinkRightSide = ({ chatroom }: { chatroom: Chatroom }) => {
   return (
     <div
       className={cn(
         { 'group-hover:visible': chatroom.id !== 1 },
-        'group invisible z-10'
+        'group invisible z-50'
       )}
     >
       <ActionIcon aria-label="Invite Friend" variant="transparent">
@@ -175,15 +172,15 @@ const NavLinkRightSide = ({
   );
 };
 
-const ChangeNameModal = ({
-  chatroom,
-}: {
-  chatroom: { id: number; name: string };
-}) => {
+const ChangeNameModal = ({ chatroom }: { chatroom: Chatroom }) => {
   const initialState = { errors: [] };
   const [opened, setOpened] = useState(false);
   const [value, setValue] = useState('');
   const [state, action] = useFormState(editChatroom, initialState);
+  const [check, setCheck] = useState(false);
+  const ref = useClickOutside(() => setCheck(false));
+  const { data: session } = useSession();
+  const userId = parseInt(session?.user.id || '');
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -198,8 +195,16 @@ const ChangeNameModal = ({
     }
   }, [state?.errors, action]);
 
+  const handleDelete = async () => {
+    if (userId !== chatroom.OwnerId) {
+      return;
+    } else {
+      await deleteChatroom(chatroom.id);
+    }
+  };
+
   return (
-    <Popover opened={opened} onChange={setOpened}>
+    <Popover opened={opened} onChange={setOpened} withArrow>
       <Popover.Target>
         <ActionIcon
           aria-label="Edit"
@@ -210,17 +215,42 @@ const ChangeNameModal = ({
         </ActionIcon>
       </Popover.Target>
       <Popover.Dropdown>
-        <form onSubmit={onSubmit}>
-          <TextInput
-            label="Edit name"
-            type="text"
-            placeholder="My Chatroom"
-            error={state?.errors[0]?.message}
-            name="chatroom"
-            onChange={(e) => setValue(e.target.value)}
-            value={value}
-          />
-        </form>
+        <div className="flex flex-col items-center gap-2">
+          <form onSubmit={onSubmit}>
+            <TextInput
+              label="Edit name"
+              type="text"
+              placeholder="My Chatroom"
+              error={state?.errors[0]?.message}
+              name="chatroom"
+              onChange={(e) => setValue(e.target.value)}
+              value={value}
+            />
+          </form>
+          {!check && (
+            <Button
+              color="red"
+              rightSection={<FaTrash />}
+              onClick={() => setCheck(!check)}
+              disabled={userId !== chatroom.OwnerId}
+            >
+              Delete
+            </Button>
+          )}
+          {check && (
+            <div ref={ref}>
+              <h5 className="font-bold text-center">Are you sure?</h5>
+              <div className="flex flex-row gap-2">
+                <Button color="red" onClick={handleDelete}>
+                  Yes
+                </Button>
+                <Button color="gray" onClick={() => setCheck(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </Popover.Dropdown>
     </Popover>
   );
