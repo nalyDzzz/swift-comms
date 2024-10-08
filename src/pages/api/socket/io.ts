@@ -39,7 +39,7 @@ export default function ioHandler(
           room,
           msg,
         }: {
-          room: number;
+          room: string;
           msg: { content: string; author: { name: string }; date: Date };
         }) => {
           addMessage(room, msg);

@@ -10,7 +10,7 @@ import { getMessages } from '@/lib/dbQueries';
 
 type ChatMessageListProps = {
   initialMessages: initialMessages[];
-  roomId: number;
+  roomId: string;
 };
 
 const ChatMessageList = ({ initialMessages, roomId }: ChatMessageListProps) => {
@@ -79,10 +79,10 @@ const ChatMessageList = ({ initialMessages, roomId }: ChatMessageListProps) => {
   }, []);
 
   useEffect(() => {
-    joinRoom(roomId.toString());
+    joinRoom(roomId);
 
     return () => {
-      leaveRoom(roomId.toString());
+      leaveRoom(roomId);
     };
   }, [roomId, joinRoom, leaveRoom]);
 

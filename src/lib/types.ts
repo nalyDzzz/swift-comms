@@ -1,7 +1,7 @@
 export type initialMessages = {
   date: Date;
   content: string;
-  id?: number;
+  id?: string;
   author: {
     name: string | null;
     username?: string | null;
@@ -10,7 +10,7 @@ export type initialMessages = {
 };
 
 export type Chatroom = {
-  id: number;
+  id: string;
   name: string;
-  OwnerId: number;
+  OwnerId: string;
 };

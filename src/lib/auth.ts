@@ -36,7 +36,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       const user = await getUser(session.user.email);
       if (user && user.username) {
         session.user.username = user.username;
-        session.user.id = user.id.toString();
+        session.user.id = user.id;
       }
       return session;
     },

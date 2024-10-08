@@ -3,9 +3,9 @@ import { createContext, useContext, useState } from 'react';
 import { initialMessages } from '@/lib/types';
 
 interface MessageContextProps {
-  realTimeMessages: { [roomId: number]: initialMessages[] };
-  addRealTimeMessage: (roomId: number, message: initialMessages) => void;
-  clearRealTimeMessages: (roomId: number) => void;
+  realTimeMessages: { [roomId: string]: initialMessages[] };
+  addRealTimeMessage: (roomId: string, message: initialMessages) => void;
+  clearRealTimeMessages: (roomId: string) => void;
 }
 
 const MessageContext = createContext<MessageContextProps>({
@@ -24,17 +24,17 @@ export const MessageProvider = ({
   children: React.ReactNode;
 }) => {
   const [realTimeMessages, setRealTimeMessages] = useState<{
-    [roomId: number]: initialMessages[];
+    [roomId: string]: initialMessages[];
   }>({});
 
-  const addRealTimeMessage = (roomId: number, message: initialMessages) => {
+  const addRealTimeMessage = (roomId: string, message: initialMessages) => {
     setRealTimeMessages((prevMessages) => ({
       ...prevMessages,
       [roomId]: [...(prevMessages[roomId] || []), message],
     }));
   };
 
-  const clearRealTimeMessages = (roomId: number) => {
+  const clearRealTimeMessages = (roomId: string) => {
     setRealTimeMessages((prevMessages) => ({
       ...prevMessages,
       [roomId]: [],

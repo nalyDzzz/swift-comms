@@ -17,7 +17,7 @@ export default function ChangeNameModal({ chatroom }: { chatroom: Chatroom }) {
   const [check, setCheck] = useState(false);
   const ref = useClickOutside(() => setCheck(false));
   const { data: session } = useSession();
-  const userId = parseInt(session?.user.id || '');
+  const userId = session?.user.id || '';
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

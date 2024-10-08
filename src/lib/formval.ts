@@ -82,7 +82,7 @@ export const editChatroom = async (prevState: any, formData: FormData) => {
   } else {
     const chatroom = formData.get('chatroom') as string;
     const id = formData.get('id') as string;
-    const result = await editChatroomName(parseInt(id), chatroom);
+    const result = await editChatroomName(id, chatroom);
     if (result === 'Error')
       return { errors: [{ message: 'An error occured!' }] };
     if (result === 'Success') revalidatePath('/chat');

@@ -8,26 +8,26 @@ datasource db {
 }
 
 model Message {
-  id         Int      @id @default(autoincrement())
+  id         String      @id @default(cuid())
   date       DateTime @default(now())
-  authorId   Int
+  authorId   String
   content    String
-  chatroomId Int
+  chatroomId String
   author     User     @relation(fields: [authorId], references: [id])
   Chatroom   Chatroom @relation("ChatroomMessages",fields: [chatroomId], references: [id], onDelete: Cascade)
 }
 
 model Chatroom {
-  id       Int       @id @default(autoincrement())
+  id       String       @id @default(cuid())
   name     String
   messages Message[] @relation("ChatroomMessages")
   User     User[]    @relation("ChatroomToUser")
-  OwnerId  Int
-  Owner    User     @relation("ChatroomOwnerToUser", fields: [OwnerId], references: [id])
+  OwnerId  String?
+  Owner    User?     @relation("ChatroomOwnerToUser", fields: [OwnerId], references: [id])
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
+  id        String        @id @default(cuid())
   email     String     @unique
   name      String?
   username  String?    @unique

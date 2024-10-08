@@ -10,7 +10,7 @@ import { useSession } from 'next-auth/react';
 import { initialMessages } from '@/lib/types';
 
 type ChatInputProps = {
-  roomId: number;
+  roomId: string;
 } & React.ComponentPropsWithoutRef<'textarea'>;
 
 export default function ChatInput({ roomId, ...props }: ChatInputProps) {

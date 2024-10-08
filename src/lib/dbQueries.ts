@@ -19,7 +19,7 @@ export async function addUserToDb(
           email,
           picture,
           chatrooms: {
-            connect: { id: 1 },
+            connect: { id: '1' },
           },
         },
       });
@@ -85,7 +85,7 @@ export async function addChatroomDb(email: string, chatroom: string) {
   }
 }
 
-export async function editChatroomName(id: number, name: string) {
+export async function editChatroomName(id: string, name: string) {
   try {
     const result = await prisma.chatroom.update({
       where: {
@@ -104,7 +104,7 @@ export async function editChatroomName(id: number, name: string) {
   }
 }
 
-export async function deleteChatroom(id: number) {
+export async function deleteChatroom(id: string) {
   try {
     const result = await prisma.chatroom.delete({
       where: { id },
@@ -129,7 +129,7 @@ export async function getChatrooms(email: string) {
   }
 }
 
-export async function addMessage(roomId: number, message: initialMessages) {
+export async function addMessage(roomId: string, message: initialMessages) {
   try {
     const user = await prisma.user.findUnique({
       where: { username: message.author.name as string },
@@ -151,9 +151,9 @@ export async function addMessage(roomId: number, message: initialMessages) {
 }
 
 export async function getMessages(
-  roomId: number,
+  roomId: string,
   limit: number,
-  cursor?: number
+  cursor?: string
 ) {
   try {
     const messages = await prisma.message.findMany({

@@ -129,7 +129,7 @@ const AvatarDropdown = ({ session }: { session: Session | null }) => {
 const NavContent = ({ chatrooms }: { chatrooms: Chatroom[] | undefined }) => {
   const path = usePathname();
 
-  const activeCheck = (e: { id: number; name: string }) => {
+  const activeCheck = (e: { id: string; name: string }) => {
     if ((path === '/chat' && e.name === 'Global') || path === `/chat/${e.id}`) {
       return true;
     } else {
@@ -142,7 +142,7 @@ const NavContent = ({ chatrooms }: { chatrooms: Chatroom[] | undefined }) => {
       <CreateRoomButton />
       {chatrooms?.map((e) => (
         <Link
-          href={e.id === 1 ? '/chat' : `/chat/${e.id}`}
+          href={e.id === '1' ? '/chat' : `/chat/${e.id}`}
           key={e.id}
           className="flex"
         >
@@ -164,7 +164,7 @@ const NavLinkRightSide = ({ chatroom }: { chatroom: Chatroom }) => {
   return (
     <div
       className={cn(
-        { 'group-hover:visible': chatroom.id !== 1 },
+        { 'group-hover:visible': chatroom.id !== '1' },
         'group invisible z-50'
       )}
     >
