@@ -1,10 +1,5 @@
 'use client';
-import React, {
-  FormEvent,
-  PropsWithChildren,
-  useEffect,
-  useState,
-} from 'react';
+import React, { PropsWithChildren, useEffect, useState } from 'react';
 import {
   AppShell,
   Burger,
@@ -20,25 +15,18 @@ import {
   Indicator,
 } from '@mantine/core';
 import Avatar from './Avatar';
-import { useClickOutside, useDisclosure } from '@mantine/hooks';
+import { useDisclosure } from '@mantine/hooks';
 import { signOut, useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
-import { addChatroom, editChatroom } from '@/lib/formval';
+import { addChatroom } from '@/lib/formval';
 import { useFormState } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { IoIosSettings } from 'react-icons/io';
 import { FaUserFriends } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
-import { FaTrash } from 'react-icons/fa';
-import { deleteChatroom } from '@/lib/dbQueries';
-import { useSocket } from './SocketProvider';
-
-type Chatroom = {
-  id: number;
-  name: string;
-  OwnerId: number;
-};
+import { useSocket } from '@/components/context/SocketProvider';
+import { Chatroom } from '@/lib/types';
+import ChangeNameModal from '@/components/nav/ChangeNameModal';
 
 type AppLayoutProps = PropsWithChildren & {
   chatrooms: Chatroom[] | undefined;
@@ -187,96 +175,6 @@ const NavLinkRightSide = ({ chatroom }: { chatroom: Chatroom }) => {
       </Tooltip>
       <ChangeNameModal chatroom={chatroom} />
     </div>
-  );
-};
-
-const ChangeNameModal = ({ chatroom }: { chatroom: Chatroom }) => {
-  const initialState = { errors: [] };
-  const [opened, setOpened] = useState(false);
-  const [value, setValue] = useState('');
-  const [state, action] = useFormState(editChatroom, initialState);
-  const [check, setCheck] = useState(false);
-  const ref = useClickOutside(() => setCheck(false));
-  const { data: session } = useSession();
-  const userId = parseInt(session?.user.id || '');
-
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    formData.set('id', chatroom.id.toString());
-    action(formData);
-  };
-
-  useEffect(() => {
-    if (state?.errors.length === 0 || !state?.errors) {
-      setOpened(false);
-    }
-  }, [state?.errors, action]);
-
-  const handleDelete = async () => {
-    if (userId !== chatroom.OwnerId) {
-      return;
-    } else {
-      await deleteChatroom(chatroom.id);
-    }
-  };
-
-  return (
-    <Popover opened={opened} onChange={setOpened} withArrow>
-      <Popover.Target>
-        <Tooltip
-          label="Rename or Delete"
-          withArrow
-          transitionProps={{ transition: 'pop' }}
-        >
-          <ActionIcon
-            aria-label="Edit"
-            variant="transparent"
-            onClick={() => setOpened((o) => !o)}
-          >
-            <IoIosSettings />
-          </ActionIcon>
-        </Tooltip>
-      </Popover.Target>
-      <Popover.Dropdown>
-        <div className="flex flex-col items-center gap-2">
-          <form onSubmit={onSubmit}>
-            <TextInput
-              label="Edit name"
-              type="text"
-              placeholder="My Chatroom"
-              error={state?.errors[0]?.message}
-              name="chatroom"
-              onChange={(e) => setValue(e.target.value)}
-              value={value}
-            />
-          </form>
-          {!check && (
-            <Button
-              color="red"
-              rightSection={<FaTrash />}
-              onClick={() => setCheck(!check)}
-              disabled={userId !== chatroom.OwnerId}
-            >
-              Delete
-            </Button>
-          )}
-          {check && (
-            <div ref={ref}>
-              <h5 className="font-bold text-center">Are you sure?</h5>
-              <div className="flex flex-row gap-2">
-                <Button color="red" onClick={handleDelete}>
-                  Yes
-                </Button>
-                <Button color="gray" onClick={() => setCheck(false)}>
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-      </Popover.Dropdown>
-    </Popover>
   );
 };
 

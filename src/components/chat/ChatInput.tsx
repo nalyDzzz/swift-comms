@@ -5,7 +5,7 @@ import { BsEmojiSmile } from 'react-icons/bs';
 import EmojiPicker, { EmojiStyle, Theme } from 'emoji-picker-react';
 import { getHotkeyHandler, useClickOutside } from '@mantine/hooks';
 import { cn } from '@/lib/utils';
-import { useSocket } from '@/components/SocketProvider';
+import { useSocket } from '@/components/context/SocketProvider';
 import { useSession } from 'next-auth/react';
 import { initialMessages } from '@/lib/types';
 

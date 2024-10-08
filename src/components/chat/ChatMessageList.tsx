@@ -1,9 +1,9 @@
 'use client';
 import React, { startTransition, useEffect, useRef, useState } from 'react';
 import ChatBubble from '@/components/chat/ChatBubble';
-import { useSocket } from '@/components/SocketProvider';
+import { useSocket } from '@/components/context/SocketProvider';
 import { initialMessages } from '@/lib/types';
-import { useMessages } from '@/components/MessageProvider';
+import { useMessages } from '@/components/context/MessageProvider';
 import { Button, Loader, Transition } from '@mantine/core';
 import { useSession } from 'next-auth/react';
 import { getMessages } from '@/lib/dbQueries';

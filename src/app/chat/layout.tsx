@@ -3,9 +3,9 @@ import React from 'react';
 import type { PropsWithChildren } from 'react';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { SocketProvider } from '@/components/SocketProvider';
+import { SocketProvider } from '@/components/context/SocketProvider';
 import { getChatrooms } from '@/lib/dbQueries';
-import { MessageProvider } from '@/components/MessageProvider';
+import { MessageProvider } from '@/components/context/MessageProvider';
 
 export default async function ChatLayout({ children }: PropsWithChildren) {
   const session = await auth();
