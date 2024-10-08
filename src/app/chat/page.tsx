@@ -8,8 +8,8 @@ import AddUsernameModal from '@/components/AddUsernameModal';
 
 export default async function Chat() {
   const session = await auth();
-
-  const messages: initialMessages[] | undefined = await getMessages(1);
+  const limit = 20;
+  const messages: initialMessages[] | undefined = await getMessages(1, limit);
   if (!messages) throw new Error('no messages');
   return (
     <div className="h-full">

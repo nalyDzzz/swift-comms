@@ -150,19 +150,28 @@ export async function addMessage(roomId: number, message: initialMessages) {
   }
 }
 
-export async function getMessages(roomId: number) {
+export async function getMessages(
+  roomId: number,
+  limit: number,
+  cursor?: number
+) {
   try {
     const messages = await prisma.message.findMany({
       where: { chatroomId: roomId },
+      orderBy: { date: 'desc' },
+      take: limit,
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
       select: {
         date: true,
+        id: true,
         author: { select: { name: true, username: true, picture: true } },
         content: true,
       },
     });
     if (!messages) throw new Error('Cannot find messages');
-    return messages;
+    return messages.reverse();
   } catch (error) {
     if (error) console.error(error);
+    return [];
   }
 }

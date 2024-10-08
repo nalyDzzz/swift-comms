@@ -20,11 +20,11 @@ export default async function Chatroom({ params }: ChatroomProps) {
     where: { id: parseInt(roomId) },
     select: { name: true },
   });
-
-  const messages: initialMessages[] | undefined = await getMessages(
-    parseInt(roomId)
+  const limit = 20;
+  const messages: initialMessages[] = await getMessages(
+    parseInt(roomId),
+    limit
   );
-  if (!messages) throw new Error('no messages');
   return (
     <div className="h-full">
       <h1 className="text-2xl font-semibold">{chatroom?.name}</h1>

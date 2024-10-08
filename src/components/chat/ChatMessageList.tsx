@@ -1,25 +1,58 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { startTransition, useEffect, useRef, useState } from 'react';
 import ChatBubble from '@/components/chat/ChatBubble';
 import { useSocket } from '@/components/SocketProvider';
 import { initialMessages } from '@/lib/types';
 import { useMessages } from '@/components/MessageProvider';
-import { Button, Transition } from '@mantine/core';
+import { Button, Loader, Transition } from '@mantine/core';
 import { useSession } from 'next-auth/react';
+import { getMessages } from '@/lib/dbQueries';
 
-const ChatMessageList = ({
-  initialMessages,
-  roomId,
-}: {
+type ChatMessageListProps = {
   initialMessages: initialMessages[];
   roomId: number;
-}) => {
+};
+
+const ChatMessageList = ({ initialMessages, roomId }: ChatMessageListProps) => {
   const { data: session } = useSession();
   const { socket, joinRoom, leaveRoom } = useSocket();
   const messageDiv = useRef<HTMLDivElement | null>(null);
   const { realTimeMessages, addRealTimeMessage } = useMessages();
+  const [messages, setMessages] = useState(initialMessages);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [messageCount, setMessageCount] = useState(0);
   const [isAtBottom, setIsAtBottom] = useState(true);
+
+  const loadMoreMessages = async () => {
+    if (loadingMore || !hasMore || !messageDiv.current) return;
+
+    const previousScrollHeight = messageDiv.current.scrollHeight;
+    const previousScrollTop = messageDiv.current.scrollTop;
+
+    setLoadingMore(true);
+    const oldestMessage = messages[0];
+
+    startTransition(async () => {
+      const newMessages = await getMessages(roomId, 20, oldestMessage.id);
+
+      if (newMessages.length > 0) {
+        setMessages((prev) => [...newMessages, ...prev]);
+
+        setTimeout(() => {
+          if (messageDiv.current) {
+            const newScrollHeight = messageDiv.current.scrollHeight;
+            messageDiv.current.scrollTop =
+              newScrollHeight - previousScrollHeight + previousScrollTop;
+          }
+        }, 1);
+      }
+
+      setHasMore(newMessages.length > 0);
+      setLoadingMore(false);
+    });
+  };
+
   const scrollToBottom = () => {
     if (!messageDiv.current) return;
     messageDiv.current.scrollTop = messageDiv.current.scrollHeight;
@@ -32,7 +65,9 @@ const ChatMessageList = ({
 
     const { scrollTop, scrollHeight, clientHeight } = messageDiv.current;
     const atBottom = scrollTop + clientHeight >= scrollHeight - 10;
-
+    if (scrollTop === 0) {
+      loadMoreMessages();
+    }
     setIsAtBottom(atBottom);
     if (atBottom) {
       setMessageCount(0);
@@ -101,7 +136,8 @@ const ChatMessageList = ({
         ref={messageDiv}
         onScroll={handleScroll}
       >
-        {initialMessages.map((e, i) => (
+        {loadingMore && <Loading />}
+        {messages.map((e, i) => (
           <ChatBubble message={e} key={i + initialMessages.length} />
         ))}
         {realTimeMessages[roomId]?.map((e, i) => (
@@ -113,3 +149,11 @@ const ChatMessageList = ({
 };
 
 export default ChatMessageList;
+
+const Loading = () => {
+  return (
+    <div className="flex items-center justify-center">
+      <Loader />
+    </div>
+  );
+};
