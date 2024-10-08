@@ -46,7 +46,12 @@ const ChatMessageList = ({
   }, [socket, roomId, addRealTimeMessage]);
 
   return (
-    <ScrollArea.Autosize w={'100%'} h={'100%'} viewportRef={messageDiv}>
+    <ScrollArea.Autosize
+      w={'100%'}
+      h={'100%'}
+      viewportRef={messageDiv}
+      type="always"
+    >
       <div className="flex flex-col gap-10 relative md:p-10">
         {initialMessages.map((e, i) => (
           <ChatBubble message={e} key={i} />
