@@ -29,7 +29,7 @@ export default async function Chatroom({ params }: ChatroomProps) {
     <div className="h-full">
       <h1 className="text-2xl font-semibold">{chatroom?.name}</h1>
       {!session?.user.username && <AddUsernameModal />}
-      <div className="h-full w-full flex flex-col items-center">
+      <div className="h-full w-full flex flex-col items-center relative">
         <ChatMessageList initialMessages={messages} roomId={parseInt(roomId)} />
         <ChatInput className="w-11/12 mb-5" roomId={parseInt(roomId)} />
       </div>
