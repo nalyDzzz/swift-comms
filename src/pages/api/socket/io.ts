@@ -1,7 +1,9 @@
 import { Server as NetServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { addMessage } from '@/lib/dbQueries';
+import { addInvite, addMessage } from '@/lib/dbQueries';
+import { Session } from 'next-auth';
+import { initialMessage, Invite } from '@/lib/types';
 
 type NextApiResponseWithSocket = NextApiResponse & {
   socket: {
@@ -21,27 +23,32 @@ export default function ioHandler(
     res.socket.server.io = io;
 
     io.on('connection', (socket) => {
-      console.log(`User connected: ${socket.id}`);
+      const user: Session['user'] = socket.handshake.auth.user;
+
+      if (user.id) {
+        socket.join(user.id);
+      }
 
       socket.on('joinRoom', (room) => {
         socket.join(room);
-        console.log(`User ${socket.id} joined room: ${room}`);
+        console.log(`User ${user.username || user.name} joined room: ${room}`);
       });
 
       socket.on('leaveRoom', (room) => {
         socket.leave(room);
-        console.log(`User ${socket.id} left room: ${room}`);
+        console.log(`User ${user.username || user.name} left room: ${room}`);
+      });
+
+      socket.on('invite', (invite: Invite) => {
+        const { fromId, toId, ChatroomId } = invite;
+        console.log('invite');
+        addInvite(fromId, toId, ChatroomId);
+        io.to(toId).emit('invite', invite);
       });
 
       socket.on(
         'message',
-        ({
-          room,
-          msg,
-        }: {
-          room: string;
-          msg: { content: string; author: { name: string }; date: Date };
-        }) => {
+        ({ room, msg }: { room: string; msg: initialMessage }) => {
           addMessage(room, msg);
           io.to(`${room}`).emit('message', msg);
         }

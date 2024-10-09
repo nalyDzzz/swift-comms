@@ -2,14 +2,14 @@
 import React, { startTransition, useEffect, useRef, useState } from 'react';
 import ChatBubble from '@/components/chat/ChatBubble';
 import { useSocket } from '@/components/context/SocketProvider';
-import { initialMessages } from '@/lib/types';
+import type { initialMessage, initialMessages } from '@/lib/types';
 import { useMessages } from '@/components/context/MessageProvider';
 import { Button, Loader, Transition } from '@mantine/core';
 import { useSession } from 'next-auth/react';
 import { getMessages } from '@/lib/dbQueries';
 
 type ChatMessageListProps = {
-  initialMessages: initialMessages[];
+  initialMessages: initialMessages;
   roomId: string;
 };
 
@@ -88,9 +88,9 @@ const ChatMessageList = ({ initialMessages, roomId }: ChatMessageListProps) => {
 
   useEffect(() => {
     if (socket) {
-      socket.on('message', (msg: initialMessages) => {
+      socket.on('message', (msg: initialMessage) => {
         addRealTimeMessage(roomId, msg);
-        if (msg.author.name === session?.user.username || isAtBottom) {
+        if (msg.author.username === session?.user.username || isAtBottom) {
           scrollToBottom();
         } else {
           setMessageCount((c) => c + 1);

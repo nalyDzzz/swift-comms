@@ -21,7 +21,7 @@ export default async function Chatroom({ params }: ChatroomProps) {
     select: { name: true },
   });
   const limit = 20;
-  const messages: initialMessages[] = await getMessages(roomId, limit);
+  const messages: initialMessages = await getMessages(roomId, limit);
   return (
     <div className="h-full">
       <h1 className="text-2xl font-semibold">{chatroom?.name}</h1>

@@ -1,5 +1,5 @@
 'use client';
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import React, { PropsWithChildren } from 'react';
 import {
   AppShell,
   Burger,
@@ -7,33 +7,25 @@ import {
   useMantineColorScheme,
   Modal,
   Button,
-  Popover,
-  TextInput,
   NavLink,
-  ActionIcon,
-  Tooltip,
   Indicator,
 } from '@mantine/core';
 import Avatar from './Avatar';
 import { useDisclosure } from '@mantine/hooks';
 import { signOut, useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
-import { addChatroom } from '@/lib/formval';
-import { useFormState } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FaUserFriends } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
 import { useSocket } from '@/components/context/SocketProvider';
 import { Chatroom } from '@/lib/types';
 import ChangeNameModal from '@/components/nav/ChangeNameModal';
-import Invites from './nav/Invites';
+import Invites from '@/components/nav/Invites';
+import CreateRoomButton from '@/components/nav/CreateRoomButton';
+import InviteUserModal from '@/components/nav/InviteUserModal';
+import { useData } from './context/DataProvider';
 
-type AppLayoutProps = PropsWithChildren & {
-  chatrooms: Chatroom[] | undefined;
-};
-
-export default function AppLayout({ children, chatrooms }: AppLayoutProps) {
+export default function AppLayout({ children }: PropsWithChildren) {
   const [opened, { toggle }] = useDisclosure();
   const { data: session } = useSession();
 
@@ -64,7 +56,7 @@ export default function AppLayout({ children, chatrooms }: AppLayoutProps) {
           </div>
         </AppShell.Header>
         <AppShell.Navbar p="md" w={{ base: 250, sm: 300 }}>
-          <NavContent chatrooms={chatrooms} />
+          <NavContent />
         </AppShell.Navbar>
         <AppShell.Main className="h-full">{children}</AppShell.Main>
       </AppShell>
@@ -75,7 +67,7 @@ export default function AppLayout({ children, chatrooms }: AppLayoutProps) {
 const AvatarDropdown = ({ session }: { session: Session | null }) => {
   const { toggleColorScheme } = useMantineColorScheme();
   const [opened, { open, close }] = useDisclosure(false);
-  const { connected } = useSocket();
+  const { socket } = useSocket();
   return (
     <>
       <Menu>
@@ -86,7 +78,7 @@ const AvatarDropdown = ({ session }: { session: Session | null }) => {
               withBorder
               size={15}
               offset={5}
-              color={connected ? 'green' : 'red'}
+              color={socket ? 'green' : 'red'}
             >
               <Avatar alt="profile picture" src={session?.user?.image}>
                 DM
@@ -126,9 +118,9 @@ const AvatarDropdown = ({ session }: { session: Session | null }) => {
   );
 };
 
-const NavContent = ({ chatrooms }: { chatrooms: Chatroom[] | undefined }) => {
+const NavContent = () => {
   const path = usePathname();
-
+  const { chatrooms } = useData();
   const activeCheck = (e: { id: string; name: string }) => {
     if ((path === '/chat' && e.name === 'Global') || path === `/chat/${e.id}`) {
       return true;
@@ -140,7 +132,7 @@ const NavContent = ({ chatrooms }: { chatrooms: Chatroom[] | undefined }) => {
   return (
     <>
       <CreateRoomButton />
-      {chatrooms?.map((e) => (
+      {chatrooms.map((e) => (
         <Link
           href={e.id === '1' ? '/chat' : `/chat/${e.id}`}
           key={e.id}
@@ -161,6 +153,18 @@ const NavContent = ({ chatrooms }: { chatrooms: Chatroom[] | undefined }) => {
 };
 
 const NavLinkRightSide = ({ chatroom }: { chatroom: Chatroom }) => {
+  // const sendInvite = async () => {
+  //   if (socket) {
+  //     socket.emit('invite', {
+  //       chatroom: chatroom.id,
+  //       fromId: 'cm20yuxhq0000plsznm95tnuy',
+  //       fromUser: 'nalyD',
+  //       toId: 'cm212t2940000p3y144gx0zzw',
+  //       toUser: 'TestUser',
+  //     });
+  //   }
+  // };
+
   return (
     <div
       className={cn(
@@ -168,56 +172,8 @@ const NavLinkRightSide = ({ chatroom }: { chatroom: Chatroom }) => {
         'group invisible z-50'
       )}
     >
-      <Tooltip
-        label="Invite Friend"
-        withArrow
-        transitionProps={{ transition: 'pop' }}
-      >
-        <ActionIcon aria-label="Invite Friend" variant="transparent">
-          <FaUserFriends />
-        </ActionIcon>
-      </Tooltip>
+      <InviteUserModal chatroom={chatroom} />
       <ChangeNameModal chatroom={chatroom} />
     </div>
-  );
-};
-
-const CreateRoomButton = () => {
-  const initialState = { errors: [] };
-  const [opened, setOpened] = useState(false);
-  const [state, formAction] = useFormState(addChatroom, initialState);
-  const [value, setValue] = useState('');
-
-  useEffect(() => {
-    if (state?.errors.length === 0 || !state?.errors) {
-      setOpened(false);
-    }
-  }, [state?.errors, formAction]);
-
-  return (
-    <Popover opened={opened} onChange={setOpened}>
-      <Popover.Target>
-        <Button variant="outline" onClick={() => setOpened(!opened)}>
-          Create Chat Room
-        </Button>
-      </Popover.Target>
-      <Popover.Dropdown>
-        <form
-          action={async (formData) => {
-            await formAction(formData);
-            setValue('');
-          }}
-        >
-          <TextInput
-            label="Pick a name"
-            placeholder="My Chatroom"
-            error={state?.errors[0]?.message}
-            name="chatroom"
-            onChange={(e) => setValue(e.target.value)}
-            value={value}
-          />
-        </form>
-      </Popover.Dropdown>
-    </Popover>
   );
 };

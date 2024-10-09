@@ -7,7 +7,7 @@ import { getHotkeyHandler, useClickOutside } from '@mantine/hooks';
 import { cn } from '@/lib/utils';
 import { useSocket } from '@/components/context/SocketProvider';
 import { useSession } from 'next-auth/react';
-import { initialMessages } from '@/lib/types';
+import { SendMessage } from '@/lib/types';
 
 type ChatInputProps = {
   roomId: string;
@@ -34,11 +34,12 @@ export default function ChatInput({ roomId, ...props }: ChatInputProps) {
   const sendMessage = () => {
     if (value.trim() === '') return;
     const date = new Date();
-    const msg: initialMessages = {
+    const msg: SendMessage = {
       content: value,
       author: {
-        name: session?.user?.username as string,
-        picture: session?.user?.image,
+        username: session?.user?.username as string,
+        name: session?.user.name as string,
+        picture: session?.user?.image || null,
       },
       date: date,
     };

@@ -1,6 +1,6 @@
 'use server';
 import prisma from '@/app/api/db';
-import { initialMessages } from './types';
+import { initialMessage } from './types';
 import { revalidatePath } from 'next/cache';
 
 export async function addUserToDb(
@@ -126,10 +126,11 @@ export async function getChatrooms(email: string) {
     return chatrooms;
   } catch (error) {
     if (error) console.error(error);
+    return [];
   }
 }
 
-export async function addMessage(roomId: string, message: initialMessages) {
+export async function addMessage(roomId: string, message: initialMessage) {
   try {
     const user = await prisma.user.findUnique({
       where: { username: message.author.name as string },
@@ -172,6 +173,73 @@ export async function getMessages(
     return messages.reverse();
   } catch (error) {
     if (error) console.error(error);
+    return [];
+  }
+}
+
+export async function addInvite(from: string, to: string, chatroom: string) {
+  try {
+    const result = await prisma.invite.create({
+      data: {
+        fromId: from,
+        toId: to,
+        ChatroomId: chatroom,
+      },
+      select: {
+        fromId: true,
+        toId: true,
+        ChatroomId: true,
+        from: { select: { username: true } },
+        Chatroom: { select: { name: true } },
+      },
+    });
+    if (!result) throw new Error('Error sending invite');
+  } catch (error) {
+    if (error) console.error(error);
+  }
+}
+
+export async function getInvites(userId: string) {
+  try {
+    const result = await prisma.invite.findMany({
+      where: { toId: userId },
+      select: {
+        fromId: true,
+        toId: true,
+        ChatroomId: true,
+        from: { select: { username: true } },
+        Chatroom: { select: { name: true, id: true } },
+      },
+    });
+    if (!result) throw new Error('Error finding invites');
+    return result;
+  } catch (error) {
+    if (error) console.error(error);
+    return [];
+  }
+}
+
+export async function getAllUsers() {
+  try {
+    const result = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        picture: true,
+        Invites: {
+          select: {
+            from: { select: { username: true } },
+            to: { select: { username: true } },
+            Chatroom: { select: { name: true } },
+          },
+        },
+      },
+    });
+    if (!result) throw new Error('Error sending invite');
+    return result;
+  } catch (err) {
+    if (err) console.error(err);
     return [];
   }
 }

@@ -4,20 +4,26 @@ import type { PropsWithChildren } from 'react';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { SocketProvider } from '@/components/context/SocketProvider';
-import { getChatrooms } from '@/lib/dbQueries';
+import { getAllUsers, getChatrooms, getInvites } from '@/lib/dbQueries';
 import { MessageProvider } from '@/components/context/MessageProvider';
+import { DataProvider } from '@/components/context/DataProvider';
 
 export default async function ChatLayout({ children }: PropsWithChildren) {
   const session = await auth();
-  if (!session?.user.email) redirect('/auth/login');
+  if (!session || !session.user.email || !session.user.id)
+    redirect('/auth/login');
   const chatrooms = await getChatrooms(session.user.email);
+  const users = await getAllUsers();
+  const invites = await getInvites(session.user.id);
   return (
     <main className="h-full">
-      <SocketProvider>
-        <MessageProvider>
-          <AppLayout chatrooms={chatrooms}>{children}</AppLayout>
-        </MessageProvider>
-      </SocketProvider>
+      <DataProvider users={users} chatrooms={chatrooms} invites={invites}>
+        <SocketProvider>
+          <MessageProvider>
+            <AppLayout>{children}</AppLayout>
+          </MessageProvider>
+        </SocketProvider>
+      </DataProvider>
     </main>
   );
 }

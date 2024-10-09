@@ -1,4 +1,4 @@
-import { initialMessages } from '@/lib/types';
+import { initialMessage } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import React from 'react';
 import Avatar from '@/components/Avatar';
@@ -6,7 +6,7 @@ import { isToday, isYesterday } from 'date-fns';
 import { toZonedTime, format as formatTz } from 'date-fns-tz';
 
 interface ChatBubbleProps extends React.ComponentPropsWithRef<'div'> {
-  message: initialMessages;
+  message: initialMessage;
 }
 
 const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(

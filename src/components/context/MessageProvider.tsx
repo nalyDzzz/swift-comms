@@ -1,10 +1,10 @@
 'use client';
 import { createContext, useContext, useState } from 'react';
-import { initialMessages } from '@/lib/types';
+import { initialMessage, initialMessages } from '@/lib/types';
 
 interface MessageContextProps {
-  realTimeMessages: { [roomId: string]: initialMessages[] };
-  addRealTimeMessage: (roomId: string, message: initialMessages) => void;
+  realTimeMessages: { [roomId: string]: initialMessages };
+  addRealTimeMessage: (roomId: string, message: initialMessage) => void;
   clearRealTimeMessages: (roomId: string) => void;
 }
 
@@ -24,10 +24,10 @@ export const MessageProvider = ({
   children: React.ReactNode;
 }) => {
   const [realTimeMessages, setRealTimeMessages] = useState<{
-    [roomId: string]: initialMessages[];
+    [roomId: string]: initialMessages;
   }>({});
 
-  const addRealTimeMessage = (roomId: string, message: initialMessages) => {
+  const addRealTimeMessage = (roomId: string, message: initialMessage) => {
     setRealTimeMessages((prevMessages) => ({
       ...prevMessages,
       [roomId]: [...(prevMessages[roomId] || []), message],
