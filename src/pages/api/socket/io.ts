@@ -3,7 +3,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { addInvite, addMessage } from '@/lib/dbQueries';
 import { Session } from 'next-auth';
-import { initialMessage, Invite } from '@/lib/types';
+import type { Invite, SendMessage } from '@/lib/types';
 
 type NextApiResponseWithSocket = NextApiResponse & {
   socket: {
@@ -48,7 +48,7 @@ export default function ioHandler(
 
       socket.on(
         'message',
-        ({ room, msg }: { room: string; msg: initialMessage }) => {
+        ({ room, msg }: { room: string; msg: SendMessage }) => {
           addMessage(room, msg);
           io.to(`${room}`).emit('message', msg);
         }

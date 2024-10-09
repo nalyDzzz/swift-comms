@@ -1,6 +1,6 @@
 'use server';
 import prisma from '@/app/api/db';
-import { initialMessage } from './types';
+import { SendMessage } from './types';
 import { revalidatePath } from 'next/cache';
 
 export async function addUserToDb(
@@ -130,10 +130,10 @@ export async function getChatrooms(email: string) {
   }
 }
 
-export async function addMessage(roomId: string, message: initialMessage) {
+export async function addMessage(roomId: string, message: SendMessage) {
   try {
     const user = await prisma.user.findUnique({
-      where: { username: message.author.name as string },
+      where: { username: message.author.username as string },
       select: { id: true },
     });
     if (!user) throw new Error('Cannot find user');

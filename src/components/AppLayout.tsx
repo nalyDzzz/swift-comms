@@ -153,18 +153,6 @@ const NavContent = () => {
 };
 
 const NavLinkRightSide = ({ chatroom }: { chatroom: Chatroom }) => {
-  // const sendInvite = async () => {
-  //   if (socket) {
-  //     socket.emit('invite', {
-  //       chatroom: chatroom.id,
-  //       fromId: 'cm20yuxhq0000plsznm95tnuy',
-  //       fromUser: 'nalyD',
-  //       toId: 'cm212t2940000p3y144gx0zzw',
-  //       toUser: 'TestUser',
-  //     });
-  //   }
-  // };
-
   return (
     <div
       className={cn(
