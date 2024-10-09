@@ -1,4 +1,5 @@
 'use client';
+import { useSession } from 'next-auth/react';
 import {
   createContext,
   useCallback,
@@ -29,28 +30,35 @@ export const useSocket = () => {
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [connected, setConnected] = useState(false);
+  const { data: session, status } = useSession();
 
   useEffect(() => {
-    const newSocket = io(process.env.NEXT_PUBLIC_SITE_URL!, {
-      path: '/api/socket/io',
-      addTrailingSlash: false,
-    });
-    setSocket(newSocket);
+    if (status === 'authenticated' && session) {
+      const newSocket = io(process.env.NEXT_PUBLIC_SITE_URL!, {
+        path: '/api/socket/io',
+        addTrailingSlash: false,
+        auth: {
+          user: session.user,
+        },
+      });
 
-    newSocket.on('connect', () => {
-      console.log('Connected to Socket.IO server');
-      setConnected(true);
-    });
+      setSocket(newSocket);
 
-    newSocket.on('disconnect', () => {
-      console.log('Disconnected from Socket.IO server');
-      setConnected(false);
-    });
+      newSocket.on('connect', () => {
+        console.log('Connected to Socket.IO server');
+        setConnected(true);
+      });
 
-    return () => {
-      newSocket.disconnect();
-    };
-  }, []);
+      newSocket.on('disconnect', () => {
+        console.log('Disconnected from Socket.IO server');
+        setConnected(false);
+      });
+
+      return () => {
+        newSocket.disconnect();
+      };
+    }
+  }, [session, status]);
 
   const joinRoom = useCallback(
     (roomId: string) => {
