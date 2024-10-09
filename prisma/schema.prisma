@@ -8,31 +8,44 @@ datasource db {
 }
 
 model Message {
-  id         String      @id @default(cuid())
+  id         String   @id @default(cuid())
   date       DateTime @default(now())
   authorId   String
   content    String
   chatroomId String
   author     User     @relation(fields: [authorId], references: [id])
-  Chatroom   Chatroom @relation("ChatroomMessages",fields: [chatroomId], references: [id], onDelete: Cascade)
+  Chatroom   Chatroom @relation("ChatroomMessages", fields: [chatroomId], references: [id], onDelete: Cascade)
 }
 
 model Chatroom {
-  id       String       @id @default(cuid())
+  id       String    @id @default(cuid())
   name     String
   messages Message[] @relation("ChatroomMessages")
   User     User[]    @relation("ChatroomToUser")
   OwnerId  String?
   Owner    User?     @relation("ChatroomOwnerToUser", fields: [OwnerId], references: [id])
+  Invites Invite[]
 }
 
 model User {
-  id        String        @id @default(cuid())
-  email     String     @unique
-  name      String?
-  username  String?    @unique
-  picture   String?
-  messages  Message[]
-  chatrooms Chatroom[] @relation("ChatroomToUser")
+  id             String     @id @default(cuid())
+  email          String     @unique
+  name           String?
+  username       String?    @unique
+  picture        String?
+  messages       Message[]
+  chatrooms      Chatroom[] @relation("ChatroomToUser")
   OwnedChatrooms Chatroom[] @relation("ChatroomOwnerToUser")
+  sentInvites    Invite[]   @relation("InviteFrom")
+  Invites        Invite[]   @relation("InviteTo")
+}
+
+model Invite {
+  id     String  @id @default(cuid())
+  from   User   @relation("InviteFrom", fields: [fromId], references: [id])
+  fromId String
+  to     User   @relation("InviteTo", fields: [toId], references: [id])
+  toId   String
+  Chatroom Chatroom @relation(fields: [ChatroomId], references: [id])
+  ChatroomId String
 }
