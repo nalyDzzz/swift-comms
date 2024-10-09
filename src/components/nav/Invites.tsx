@@ -24,7 +24,6 @@ export default function Invites({}: Props) {
   useEffect(() => {
     if (socket) {
       socket.on('invite', (invite: Invite) => {
-        console.log(invite);
         setInvites((prev) => [...prev, invite]);
         setPinging(true);
       });
@@ -57,6 +56,14 @@ export default function Invites({}: Props) {
     if (result === 'Success') await deleteInvite(inviteId);
     const newInvites = invites.filter((e) => e.id !== inviteId);
     setInvites(newInvites);
+  };
+
+  const handleDeny = async (inviteId: string) => {
+    const result = await deleteInvite(inviteId);
+    if (result === 'Success') {
+      const newInvites = invites.filter((e) => e.id !== inviteId);
+      setInvites(newInvites);
+    }
   };
 
   return (
@@ -95,7 +102,11 @@ export default function Invites({}: Props) {
                 >
                   <IoMdCheckmark size="1.2em" />
                 </Button>
-                <Button color="red" size="compact-md">
+                <Button
+                  color="red"
+                  size="compact-md"
+                  onClick={() => handleDeny(e.id)}
+                >
                   <IoMdClose size="1.2em" />
                 </Button>
               </div>
