@@ -1,5 +1,5 @@
 'use client';
-import { Button, Popover } from '@mantine/core';
+import { Button, Indicator, Popover } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import {
   IoMdMail,
@@ -18,12 +18,13 @@ export default function Invites({}: Props) {
   const [opened, setOpened] = useState(false);
   const { socket } = useSocket();
   const [invites, setInvites] = useState<Invite[]>(dbInvites);
+  const [pinging, setPinging] = useState(false);
 
   useEffect(() => {
     if (socket) {
       socket.on('invite', (invite: Invite) => {
         setInvites((prev) => [...prev, invite]);
-        console.log('invite');
+        setPinging(true);
       });
     }
 
@@ -34,12 +35,31 @@ export default function Invites({}: Props) {
     };
   }, [socket]);
 
+  useEffect(() => {
+    if (invites.length >= 1) {
+      setPinging(true);
+    }
+  }, [invites]);
+
+  const handleOpen = () => {
+    setOpened((o) => !o);
+    setPinging(false);
+  };
+
   return (
     <Popover withArrow opened={opened} onChange={setOpened}>
       <Popover.Target>
-        <a className="cursor-pointer" onClick={() => setOpened((o) => !o)}>
-          {opened ? <IoMdMailOpen size="1.5em" /> : <IoMdMail size="1.5em" />}
-        </a>
+        <Indicator
+          position="top-start"
+          offset={1}
+          color="red"
+          processing
+          disabled={!pinging}
+        >
+          <a className="cursor-pointer" onClick={handleOpen}>
+            {opened ? <IoMdMailOpen size="1.5em" /> : <IoMdMail size="1.5em" />}
+          </a>
+        </Indicator>
       </Popover.Target>
       <Popover.Dropdown>
         <div className="flex flex-col gap-2">
