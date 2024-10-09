@@ -10,6 +10,7 @@ import {
 import { useSocket } from '../context/SocketProvider';
 import type { Invite } from '@/lib/types';
 import { useData } from '../context/DataProvider';
+import { addUserToChatroom, deleteInvite } from '@/lib/dbQueries';
 
 type Props = {};
 
@@ -23,6 +24,7 @@ export default function Invites({}: Props) {
   useEffect(() => {
     if (socket) {
       socket.on('invite', (invite: Invite) => {
+        console.log(invite);
         setInvites((prev) => [...prev, invite]);
         setPinging(true);
       });
@@ -44,6 +46,17 @@ export default function Invites({}: Props) {
   const handleOpen = () => {
     setOpened((o) => !o);
     setPinging(false);
+  };
+
+  const handleAccept = async (
+    chatroomId: string,
+    toId: string,
+    inviteId: string
+  ) => {
+    const result = await addUserToChatroom(chatroomId, toId);
+    if (result === 'Success') await deleteInvite(inviteId);
+    const newInvites = invites.filter((e) => e.id !== inviteId);
+    setInvites(newInvites);
   };
 
   return (
@@ -75,7 +88,11 @@ export default function Invites({}: Props) {
                 <span className="font-medium">{e.Chatroom.name}</span>
               </span>
               <div className="flex gap-2">
-                <Button color="green" size="compact-md">
+                <Button
+                  color="green"
+                  size="compact-md"
+                  onClick={() => handleAccept(e.ChatroomId, e.toId, e.id)}
+                >
                   <IoMdCheckmark size="1.2em" />
                 </Button>
                 <Button color="red" size="compact-md">

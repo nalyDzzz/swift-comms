@@ -3,7 +3,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { addInvite, addMessage } from '@/lib/dbQueries';
 import { Session } from 'next-auth';
-import type { Invite, SendMessage } from '@/lib/types';
+import type { SendInvite, SendMessage } from '@/lib/types';
 
 type NextApiResponseWithSocket = NextApiResponse & {
   socket: {
@@ -39,11 +39,11 @@ export default function ioHandler(
         console.log(`User ${user.username || user.name} left room: ${room}`);
       });
 
-      socket.on('invite', (invite: Invite) => {
+      socket.on('invite', async (invite: SendInvite) => {
         const { fromId, toId, ChatroomId } = invite;
         console.log('invite');
-        addInvite(fromId, toId, ChatroomId);
-        io.to(toId).emit('invite', invite);
+        const inviteUser = await addInvite(fromId, toId, ChatroomId);
+        io.to(toId).emit('invite', inviteUser);
       });
 
       socket.on(

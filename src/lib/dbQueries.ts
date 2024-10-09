@@ -186,6 +186,7 @@ export async function addInvite(from: string, to: string, chatroom: string) {
         ChatroomId: chatroom,
       },
       select: {
+        id: true,
         fromId: true,
         toId: true,
         ChatroomId: true,
@@ -194,6 +195,7 @@ export async function addInvite(from: string, to: string, chatroom: string) {
       },
     });
     if (!result) throw new Error('Error sending invite');
+    return result;
   } catch (error) {
     if (error) console.error(error);
   }
@@ -204,6 +206,7 @@ export async function getInvites(userId: string) {
     const result = await prisma.invite.findMany({
       where: { toId: userId },
       select: {
+        id: true,
         fromId: true,
         toId: true,
         ChatroomId: true,
@@ -216,6 +219,35 @@ export async function getInvites(userId: string) {
   } catch (error) {
     if (error) console.error(error);
     return [];
+  }
+}
+
+export async function addUserToChatroom(chatroomId: string, userId: string) {
+  try {
+    const result = await prisma.chatroom.update({
+      where: { id: chatroomId },
+      data: {
+        User: { connect: { id: userId } },
+      },
+    });
+    if (!result) throw new Error('Error adding user');
+    revalidatePath('/chat');
+    return 'Success';
+  } catch (error) {
+    if (error) console.error(error);
+    return 'Failed';
+  }
+}
+
+export async function deleteInvite(id: string) {
+  try {
+    console.log(`ID: ${id}`);
+    const result = await prisma.invite.delete({ where: { id: id } });
+    if (!result) throw new Error('Error deleting invite');
+    return 'Success';
+  } catch (error) {
+    if (error) console.error(error);
+    return 'Failed';
   }
 }
 

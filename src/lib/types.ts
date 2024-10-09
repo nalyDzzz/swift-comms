@@ -22,6 +22,17 @@ export type initialMessages = Prisma.PromiseReturnType<typeof getMessages>;
 
 export type Invite = Prisma.InviteGetPayload<{
   select: {
+    id: true;
+    fromId: true;
+    toId: true;
+    ChatroomId: true;
+    from: { select: { username: true } };
+    Chatroom: { select: { name: true } };
+  };
+}>;
+
+export type SendInvite = Prisma.InviteGetPayload<{
+  select: {
     fromId: true;
     toId: true;
     ChatroomId: true;

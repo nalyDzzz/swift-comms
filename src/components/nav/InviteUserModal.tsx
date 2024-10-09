@@ -1,4 +1,4 @@
-import { Chatroom, Invite } from '@/lib/types';
+import type { Chatroom, SendInvite } from '@/lib/types';
 import { ActionIcon, Button, Modal, TextInput, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import React, { useState } from 'react';
@@ -38,7 +38,7 @@ export default function InviteUserModal({ chatroom }: Props) {
 
   const sendInvite = (toId: string) => {
     if (socket && session && session.user.id) {
-      const invite: Invite = {
+      const invite: SendInvite = {
         fromId: session.user.id,
         toId,
         ChatroomId: chatroom.id,
