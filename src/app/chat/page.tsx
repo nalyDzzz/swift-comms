@@ -5,6 +5,11 @@ import { getMessages } from '@/lib/dbQueries';
 import { initialMessages } from '@/lib/types';
 import { auth } from '@/lib/auth';
 import AddUsernameModal from '@/components/AddUsernameModal';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Global Chat',
+};
 
 export default async function Chat() {
   const session = await auth();

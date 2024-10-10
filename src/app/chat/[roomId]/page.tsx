@@ -13,6 +13,15 @@ interface ChatroomProps {
   };
 }
 
+export async function generateMetadata({ params }: ChatroomProps) {
+  const { roomId } = params;
+  const chatroom = await prisma.chatroom.findUnique({
+    where: { id: roomId },
+    select: { name: true },
+  });
+  return { title: chatroom?.name };
+}
+
 export default async function Chatroom({ params }: ChatroomProps) {
   const { roomId } = params;
   const session = await auth();
