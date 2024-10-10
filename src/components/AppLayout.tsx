@@ -55,7 +55,12 @@ export default function AppLayout({ children }: PropsWithChildren) {
             </div>
           </div>
         </AppShell.Header>
-        <AppShell.Navbar p="md" w={{ base: 250, sm: 300 }}>
+        <AppShell.Navbar
+          p="md"
+          w={{ base: 250, sm: 300 }}
+          className="overflow-y-scroll"
+          id="navbar"
+        >
           <NavContent />
         </AppShell.Navbar>
         <AppShell.Main className="h-full">{children}</AppShell.Main>
@@ -153,11 +158,15 @@ const NavContent = () => {
 };
 
 const NavLinkRightSide = ({ chatroom }: { chatroom: Chatroom }) => {
+  if (chatroom.id === '1') return null;
   return (
     <div
       className={cn(
-        { 'group-hover:visible': chatroom.id !== '1' },
-        'group group-data-[active="true"]:visible invisible z-50'
+        {
+          'group-hover:visible group-data-[active="true"]:visible':
+            chatroom.id !== '1',
+        },
+        'group  invisible z-50'
       )}
     >
       <InviteUserModal chatroom={chatroom} />

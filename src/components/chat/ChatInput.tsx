@@ -43,6 +43,7 @@ export default function ChatInput({ roomId, ...props }: ChatInputProps) {
       },
       date: date,
     };
+    if (!socket) console.log('No socket found', socket);
     if (socket) socket.emit('message', { room: roomId, msg });
     setValue('');
   };

@@ -20,7 +20,11 @@ export default function CreateRoomButton({}: Props) {
   return (
     <Popover opened={opened} onChange={setOpened}>
       <Popover.Target>
-        <Button variant="outline" onClick={() => setOpened(!opened)}>
+        <Button
+          variant="outline"
+          onClick={() => setOpened(!opened)}
+          className="min-h-9 w-full"
+        >
           Create Chat Room
         </Button>
       </Popover.Target>
