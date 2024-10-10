@@ -15,7 +15,7 @@ type ChatMessageListProps = {
 
 const ChatMessageList = ({ initialMessages, roomId }: ChatMessageListProps) => {
   const { data: session } = useSession();
-  const { socket, joinRoom, leaveRoom, connected } = useSocket();
+  const { socket, joinRoom, leaveRoom } = useSocket();
   const messageDiv = useRef<HTMLDivElement | null>(null);
   const { realTimeMessages, addRealTimeMessage } = useMessages();
   const [messages, setMessages] = useState(initialMessages);
@@ -79,12 +79,12 @@ const ChatMessageList = ({ initialMessages, roomId }: ChatMessageListProps) => {
   }, []);
 
   useEffect(() => {
-    if (connected) joinRoom(roomId);
+    if (socket) joinRoom(roomId);
 
     return () => {
-      if (connected) leaveRoom(roomId);
+      if (socket) leaveRoom(roomId);
     };
-  }, [roomId, joinRoom, leaveRoom, connected]);
+  }, [roomId, joinRoom, leaveRoom, socket]);
 
   useEffect(() => {
     if (socket) {
