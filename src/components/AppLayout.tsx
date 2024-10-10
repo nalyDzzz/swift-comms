@@ -23,6 +23,7 @@ import Invites from '@/components/nav/Invites';
 import CreateRoomButton from '@/components/nav/CreateRoomButton';
 import InviteUserModal from '@/components/nav/InviteUserModal';
 import { useData } from './context/DataProvider';
+import Logo from './nav/Logo';
 
 export default function AppLayout({ children }: PropsWithChildren) {
   const [opened, { toggle }] = useDisclosure();
@@ -41,14 +42,17 @@ export default function AppLayout({ children }: PropsWithChildren) {
         padding="md"
       >
         <AppShell.Header>
-          <div className="w-full h-full px-4 grid grid-cols-2 items-center">
-            <Burger
-              opened={opened}
-              onClick={toggle}
-              hiddenFrom="sm"
-              size="sm"
-            />
-            <div className="justify-self-end col-start-2 flex flex-row items-center gap-2">
+          <div className="w-full h-full px-4 flex items-center justify-between">
+            <div className="flex items-center">
+              <Burger
+                opened={opened}
+                onClick={toggle}
+                hiddenFrom="sm"
+                size="sm"
+              />
+              <Logo />
+            </div>
+            <div className="flex items-center gap-2">
               <Invites />
               <AvatarDropdown session={session} />
             </div>
