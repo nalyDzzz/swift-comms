@@ -1,13 +1,15 @@
-import { deleteChatroom } from '@/lib/dbQueries';
+'use client';
+import { deleteChatroom, leaveChatroom } from '@/lib/dbQueries';
 import { editChatroom } from '@/lib/formval';
 import { Chatroom } from '@/lib/types';
 import { Popover, Tooltip, ActionIcon, TextInput, Button } from '@mantine/core';
 import { useClickOutside } from '@mantine/hooks';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import React, { FormEvent, useEffect, useState } from 'react';
 import { useFormState } from 'react-dom';
 import { FaTrash } from 'react-icons/fa';
-import { IoIosSettings } from 'react-icons/io';
+import { IoIosSettings, IoMdExit } from 'react-icons/io';
 
 export default function ChangeNameModal({ chatroom }: { chatroom: Chatroom }) {
   const initialState = { errors: [] };
@@ -18,9 +20,11 @@ export default function ChangeNameModal({ chatroom }: { chatroom: Chatroom }) {
   const ref = useClickOutside(() => setCheck(false));
   const { data: session } = useSession();
   const userId = session?.user.id || '';
+  const router = useRouter();
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!isOwner) return;
     const formData = new FormData(event.currentTarget);
     formData.set('id', chatroom.id.toString());
     action(formData);
@@ -40,11 +44,18 @@ export default function ChangeNameModal({ chatroom }: { chatroom: Chatroom }) {
     }
   };
 
+  const handleLeave = async () => {
+    await leaveChatroom(chatroom.id, userId);
+    router.push('/chat');
+  };
+
+  const isOwner = userId === chatroom.OwnerId;
+
   return (
     <Popover opened={opened} onChange={setOpened} withArrow>
       <Popover.Target>
         <Tooltip
-          label="Rename or Delete"
+          label={isOwner ? 'Rename or Delete' : 'Leave'}
           withArrow
           transitionProps={{ transition: 'pop' }}
         >
@@ -60,33 +71,42 @@ export default function ChangeNameModal({ chatroom }: { chatroom: Chatroom }) {
       <Popover.Dropdown>
         <div className="flex flex-col items-center gap-2">
           <form onSubmit={onSubmit}>
-            <TextInput
-              label="Edit name"
-              type="text"
-              placeholder="My Chatroom"
-              error={state?.errors[0]?.message}
-              name="chatroom"
-              onChange={(e) => setValue(e.target.value)}
-              value={value}
-            />
+            {isOwner && (
+              <TextInput
+                label="Edit name"
+                type="text"
+                placeholder="My Chatroom"
+                error={state?.errors[0]?.message}
+                name="chatroom"
+                onChange={(e) => setValue(e.target.value)}
+                value={value}
+                disabled={!isOwner}
+              />
+            )}
           </form>
           {!check && (
             <Button
               color="red"
-              rightSection={<FaTrash />}
+              rightSection={isOwner ? <FaTrash /> : <IoMdExit />}
               onClick={() => setCheck(!check)}
-              disabled={userId !== chatroom.OwnerId}
             >
-              Delete
+              {isOwner ? 'Delete' : 'Leave'}
             </Button>
           )}
           {check && (
             <div ref={ref}>
               <h5 className="font-bold text-center">Are you sure?</h5>
               <div className="flex flex-row gap-2">
-                <Button color="red" onClick={handleDelete}>
-                  Yes
-                </Button>
+                {isOwner && (
+                  <Button color="red" onClick={handleDelete}>
+                    Yes
+                  </Button>
+                )}
+                {!isOwner && (
+                  <Button color="red" onClick={handleLeave}>
+                    Yes
+                  </Button>
+                )}
                 <Button color="gray" onClick={() => setCheck(false)}>
                   Cancel
                 </Button>

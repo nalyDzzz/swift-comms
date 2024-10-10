@@ -280,3 +280,17 @@ export async function getAllUsers() {
     return [];
   }
 }
+
+export async function leaveChatroom(chatroomId: string, userId: string) {
+  try {
+    const result = await prisma.chatroom.update({
+      where: { id: chatroomId },
+      data: { User: { disconnect: { id: userId } } },
+    });
+    if (!result) throw new Error('Error leaving chatroom');
+    return 'Success';
+  } catch (error) {
+    if (error) console.error(error);
+    return 'Failed';
+  }
+}
