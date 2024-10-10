@@ -8,11 +8,9 @@ interface MessageContextProps {
   clearRealTimeMessages: (roomId: string) => void;
 }
 
-const MessageContext = createContext<MessageContextProps>({
-  realTimeMessages: {},
-  addRealTimeMessage: () => {},
-  clearRealTimeMessages: () => {},
-});
+const MessageContext = createContext<MessageContextProps>(
+  {} as MessageContextProps
+);
 
 export const useMessages = () => {
   return useContext(MessageContext);

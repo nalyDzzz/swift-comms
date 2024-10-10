@@ -19,7 +19,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="h-screen overflow-y-hidden">
-        <SessionProvider session={session}>
+        <SessionProvider session={session} refetchOnWindowFocus={false}>
           <ThemeProvider>{children}</ThemeProvider>
         </SessionProvider>
       </body>

@@ -16,12 +16,9 @@ interface SocketContextProps {
   leaveRoom: (roomName: string) => void;
 }
 
-const SocketContext = createContext<SocketContextProps>({
-  socket: null,
-  connected: false,
-  joinRoom: () => {},
-  leaveRoom: () => {},
-});
+const SocketContext = createContext<SocketContextProps>(
+  {} as SocketContextProps
+);
 
 export const useSocket = () => {
   return useContext(SocketContext);
