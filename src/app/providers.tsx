@@ -7,7 +7,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const theme = createTheme({});
 
   return (
-    <SessionProvider>
+    <SessionProvider refetchOnWindowFocus={false} refetchInterval={60 * 5}>
       <ColorSchemeScript defaultColorScheme="auto" />
       <MantineProvider
         defaultColorScheme="auto"
