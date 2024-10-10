@@ -30,7 +30,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (status === 'authenticated' && session) {
+    if (status === 'authenticated' && session && !socket) {
       const newSocket = io(process.env.NEXT_PUBLIC_SITE_URL!, {
         path: '/api/socket/io',
         addTrailingSlash: false,
@@ -38,29 +38,36 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
           user: session.user,
         },
       });
+      setSocket(newSocket);
+    }
+  }, [status, session, socket]);
 
-      newSocket.on('connect', () => {
+  useEffect(() => {
+    if (socket) {
+      socket.on('connect', () => {
         console.log('Connected to Socket.IO server');
-        setConnected(true);
+        setConnected(socket.connected);
       });
 
-      newSocket.on('disconnect', () => {
+      socket.on('disconnect', () => {
         console.log('Disconnected from Socket.IO server');
-        setConnected(false);
+        setConnected(socket.connected);
         setSocket(null);
       });
 
-      newSocket.on('connect_error', (error) => {
+      socket.on('connect_error', (error) => {
         console.error('Connection error:', error);
       });
 
-      setSocket(newSocket);
-
       return () => {
-        newSocket.disconnect();
+        socket.disconnect();
       };
     }
-  }, [session, status]);
+  }, [socket]);
+
+  useEffect(() => {
+    if (!socket) setConnected(false);
+  }, [socket]);
 
   const joinRoom = useCallback(
     (roomId: string) => {
