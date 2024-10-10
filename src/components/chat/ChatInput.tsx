@@ -54,7 +54,7 @@ export default function ChatInput({ roomId, ...props }: ChatInputProps) {
         rightSection={
           <div
             ref={setButton}
-            className="w-fit h-fit flex justify-center align-middle"
+            className="w-fit h-fit justify-center align-middle hidden sm:flex"
           >
             <EmojiButton onClick={handleClick} />
           </div>

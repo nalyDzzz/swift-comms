@@ -2,7 +2,14 @@
 import { deleteChatroom, leaveChatroom } from '@/lib/dbQueries';
 import { editChatroom } from '@/lib/formval';
 import { Chatroom } from '@/lib/types';
-import { Popover, Tooltip, ActionIcon, TextInput, Button } from '@mantine/core';
+import {
+  Popover,
+  Tooltip,
+  ActionIcon,
+  TextInput,
+  Button,
+  FocusTrap,
+} from '@mantine/core';
 import { useClickOutside } from '@mantine/hooks';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -70,20 +77,23 @@ export default function ChangeNameModal({ chatroom }: { chatroom: Chatroom }) {
       </Popover.Target>
       <Popover.Dropdown>
         <div className="flex flex-col items-center gap-2">
-          <form onSubmit={onSubmit}>
-            {isOwner && (
-              <TextInput
-                label="Edit name"
-                type="text"
-                placeholder="My Chatroom"
-                error={state?.errors[0]?.message}
-                name="chatroom"
-                onChange={(e) => setValue(e.target.value)}
-                value={value}
-                disabled={!isOwner}
-              />
-            )}
-          </form>
+          <FocusTrap active={opened}>
+            <form onSubmit={onSubmit}>
+              {isOwner && (
+                <TextInput
+                  label="Edit name"
+                  type="text"
+                  placeholder="My Chatroom"
+                  error={state?.errors[0]?.message}
+                  name="chatroom"
+                  onChange={(e) => setValue(e.target.value)}
+                  value={value}
+                  disabled={!isOwner}
+                  data-autofocus
+                />
+              )}
+            </form>
+          </FocusTrap>
           {!check && (
             <Button
               color="red"

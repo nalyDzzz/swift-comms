@@ -16,7 +16,6 @@ import { signOut, useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
 import { useSocket } from '@/components/context/SocketProvider';
 import { Chatroom } from '@/lib/types';
 import ChangeNameModal from '@/components/nav/ChangeNameModal';
@@ -161,15 +160,7 @@ const NavContent = () => {
 const NavLinkRightSide = ({ chatroom }: { chatroom: Chatroom }) => {
   if (chatroom.id === '1') return null;
   return (
-    <div
-      className={cn(
-        {
-          'group-hover:visible group-data-[active="true"]:visible':
-            chatroom.id !== '1',
-        },
-        'group  invisible z-50'
-      )}
-    >
+    <div className='group-hover:visible group-data-[active="true"]:visible invisible z-50'>
       <InviteUserModal chatroom={chatroom} />
       <ChangeNameModal chatroom={chatroom} />
     </div>

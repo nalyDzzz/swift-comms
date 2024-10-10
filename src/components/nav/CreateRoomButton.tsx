@@ -1,5 +1,5 @@
 import { addChatroom } from '@/lib/formval';
-import { Popover, Button, TextInput } from '@mantine/core';
+import { Popover, Button, TextInput, FocusTrap } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import { useFormState } from 'react-dom';
 
@@ -29,21 +29,24 @@ export default function CreateRoomButton({}: Props) {
         </Button>
       </Popover.Target>
       <Popover.Dropdown>
-        <form
-          action={async (formData) => {
-            await formAction(formData);
-            setValue('');
-          }}
-        >
-          <TextInput
-            label="Pick a name"
-            placeholder="My Chatroom"
-            error={state?.errors[0]?.message}
-            name="chatroom"
-            onChange={(e) => setValue(e.target.value)}
-            value={value}
-          />
-        </form>
+        <FocusTrap active={opened}>
+          <form
+            action={async (formData) => {
+              await formAction(formData);
+              setValue('');
+            }}
+          >
+            <TextInput
+              label="Pick a name"
+              placeholder="My Chatroom"
+              error={state?.errors[0]?.message}
+              name="chatroom"
+              onChange={(e) => setValue(e.target.value)}
+              value={value}
+              data-autofocus
+            />
+          </form>
+        </FocusTrap>
       </Popover.Dropdown>
     </Popover>
   );
