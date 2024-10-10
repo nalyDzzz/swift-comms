@@ -84,6 +84,11 @@ export default function Invites({}: Props) {
       <Popover.Dropdown>
         <div className="flex flex-col gap-2">
           <h5 className="text-xl font-semibold text-center">Invites</h5>
+          {invites.length === 0 && (
+            <p className="text-sm">
+              You do not have any invites at the moment!
+            </p>
+          )}
           {invites.map((e, i) => (
             <div
               className="flex flex-row gap-2 items-center"

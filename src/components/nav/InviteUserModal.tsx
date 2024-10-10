@@ -102,7 +102,6 @@ const UserList = ({ chatroom, picture, username, id }: UserListProps) => {
       const toUserInvites = users
         .filter((e) => e.username === username)
         .map((e) => e.Invites);
-      console.log(toUserInvites);
       if (toUserInvites.length === 0 || !toUserInvites[0])
         return setIsInvited(false);
       const toUserHasInvite = toUserInvites[0].some((e) => {
