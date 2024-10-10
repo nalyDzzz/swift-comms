@@ -26,17 +26,18 @@ const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
     };
     return (
       <div
-        className={cn('flex items-start gap-2.5', className)}
+        className={cn('flex items-start gap-2.5 w-full', className)}
         {...props}
         ref={ref}
       >
         <Avatar
+          className="shrink-0"
           src={message.author.picture}
           alt={message.author.name || 'profile pic'}
         >
           {message?.author?.name?.[0]}
         </Avatar>
-        <div className="flex flex-col w-full max-w-[320px] leading-1.5">
+        <div className="flex flex-col leading-5">
           <div className="flex items-center space-x-2 rtl:space-x-reverse">
             <span className="font-semibold text-dark-9 dark:text-dark-1">
               {message.author.username ?? message.author.name}

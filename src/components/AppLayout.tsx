@@ -81,7 +81,7 @@ const AvatarDropdown = ({ session }: { session: Session | null }) => {
               color={connected ? 'green' : 'red'}
             >
               <Avatar alt="profile picture" src={session?.user?.image}>
-                DM
+                {session?.user?.name?.[0] ?? session?.user?.username?.[0] ?? ''}
               </Avatar>
             </Indicator>
           </a>
@@ -157,7 +157,7 @@ const NavLinkRightSide = ({ chatroom }: { chatroom: Chatroom }) => {
     <div
       className={cn(
         { 'group-hover:visible': chatroom.id !== '1' },
-        'group invisible z-50'
+        'group group-data-[active="true"]:visible invisible z-50'
       )}
     >
       <InviteUserModal chatroom={chatroom} />
