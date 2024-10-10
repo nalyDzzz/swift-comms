@@ -58,8 +58,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
         <AppShell.Navbar
           p="md"
           w={{ base: 250, sm: 300 }}
-          className="overflow-y-scroll"
-          id="navbar"
+          className="overflow-y-hidden flex gap-2"
         >
           <NavContent />
         </AppShell.Navbar>
@@ -72,7 +71,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
 const AvatarDropdown = ({ session }: { session: Session | null }) => {
   const { toggleColorScheme } = useMantineColorScheme();
   const [opened, { open, close }] = useDisclosure(false);
-  const { connected } = useSocket();
+  const { socket } = useSocket();
   return (
     <>
       <Menu>
@@ -83,7 +82,7 @@ const AvatarDropdown = ({ session }: { session: Session | null }) => {
               withBorder
               size={15}
               offset={5}
-              color={connected ? 'green' : 'red'}
+              color={socket ? 'green' : 'red'}
             >
               <Avatar alt="profile picture" src={session?.user?.image}>
                 {session?.user?.name?.[0] ?? session?.user?.username?.[0] ?? ''}
@@ -137,22 +136,24 @@ const NavContent = () => {
   return (
     <>
       <CreateRoomButton />
-      {chatrooms.map((e) => (
-        <Link
-          href={e.id === '1' ? '/chat' : `/chat/${e.id}`}
-          key={e.id}
-          className="flex"
-        >
-          <NavLink
-            component="div"
-            label={e.name}
-            active={activeCheck(e)}
-            autoContrast
-            className="group"
-            rightSection={<NavLinkRightSide chatroom={e} />}
-          />
-        </Link>
-      ))}
+      <div className="w-full overflow-y-scroll" id="chatroom-list">
+        {chatrooms.map((e) => (
+          <Link
+            href={e.id === '1' ? '/chat' : `/chat/${e.id}`}
+            key={e.id}
+            className="flex"
+          >
+            <NavLink
+              component="div"
+              label={e.name}
+              active={activeCheck(e)}
+              autoContrast
+              className="group"
+              rightSection={<NavLinkRightSide chatroom={e} />}
+            />
+          </Link>
+        ))}
+      </div>
     </>
   );
 };

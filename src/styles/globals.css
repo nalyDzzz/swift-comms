@@ -30,6 +30,6 @@
   }
 }
 
-#navbar::-webkit-scrollbar {
+#chatroom-list::-webkit-scrollbar {
   width: 5px;
 }
