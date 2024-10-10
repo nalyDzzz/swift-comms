@@ -1,7 +1,7 @@
 import type { Chatroom, SendInvite } from '@/lib/types';
 import { ActionIcon, Button, Modal, TextInput, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaUserFriends } from 'react-icons/fa';
 import Avatar from '../Avatar';
 import { useData } from '../context/DataProvider';
@@ -13,9 +13,7 @@ type Props = {
 };
 
 export default function InviteUserModal({ chatroom }: Props) {
-  const { socket } = useSocket();
   const [opened, { open, close }] = useDisclosure(false);
-  const { data: session } = useSession();
   const [search, setSearch] = useState('');
   const { users } = useData();
   const notPartOfChat = users.filter(
@@ -24,33 +22,6 @@ export default function InviteUserModal({ chatroom }: Props) {
   const filtered = notPartOfChat.filter((e) =>
     e.username?.toLowerCase().includes(search.toLowerCase())
   );
-
-  const checkIfInvited = (toUser: string) => {
-    if (!session || !session.user.username) return;
-    const fromUser = session.user.username;
-    const toUserInvites = users
-      .filter((e) => e.username === toUser)
-      .map((e) => e.Invites);
-    if (toUserInvites.length === 0 || toUserInvites[0] === undefined)
-      return false;
-    const toUserHasInvite = toUserInvites[0].find((e) => {
-      return e.Chatroom.id === chatroom.id && e.from.username === fromUser;
-    });
-    return toUserHasInvite ? true : false;
-  };
-
-  const sendInvite = (toId: string) => {
-    if (socket && session && session.user.id) {
-      const invite: SendInvite = {
-        fromId: session.user.id,
-        toId,
-        ChatroomId: chatroom.id,
-        Chatroom: { name: chatroom.name },
-        from: { username: session.user.username },
-      };
-      socket.emit('invite', invite);
-    }
-  };
 
   return (
     <>
@@ -81,29 +52,13 @@ export default function InviteUserModal({ chatroom }: Props) {
           />
           <div className="flex flex-col gap-2 w-full p-2 h-[92%] overflow-y-scroll overflow-x-hidden">
             {filtered.map((el) => (
-              <div
+              <UserList
+                chatroom={chatroom}
+                username={el.username as string}
                 key={el.id}
-                className="flex gap-2 items-center w-full dark:hover:bg-dark-5 hover:bg-dark-1 rounded p-2"
-              >
-                <Avatar src={el.picture} alt="profile picture" />
-                <span className="font-medium">{el.username}</span>
-                <div className="flex items-center justify-end grow">
-                  <Button
-                    variant="outline"
-                    size="compact-md"
-                    className="font-normal text-sm"
-                    disabled={checkIfInvited(el.username as string)}
-                    onClick={() => sendInvite(el.id)}
-                    color={
-                      !checkIfInvited(el.username as string) ? 'blue' : 'green'
-                    }
-                  >
-                    {!checkIfInvited(el.username as string)
-                      ? 'Invite'
-                      : 'Invited'}
-                  </Button>
-                </div>
-              </div>
+                id={el.id}
+                picture={el.picture as string}
+              />
             ))}
           </div>
         </div>
@@ -111,3 +66,70 @@ export default function InviteUserModal({ chatroom }: Props) {
     </>
   );
 }
+
+type UserListProps = {
+  chatroom: Chatroom;
+  picture: string;
+  username: string;
+  id: string;
+};
+
+const UserList = ({ chatroom, picture, username, id }: UserListProps) => {
+  const { socket } = useSocket();
+  const { data: session } = useSession();
+  const { users } = useData();
+  const [isInvited, setIsInvited] = useState(false);
+
+  const sendInvite = () => {
+    if (isInvited) return;
+    if (socket && session && session.user.id) {
+      const invite: SendInvite = {
+        fromId: session.user.id,
+        toId: id,
+        ChatroomId: chatroom.id,
+        Chatroom: { name: chatroom.name },
+        from: { username: session.user.username },
+      };
+      socket.emit('invite', invite);
+      setIsInvited(true);
+    }
+  };
+
+  useEffect(() => {
+    const checkIfInvited = () => {
+      if (!session || !session.user.username) return;
+      const fromUser = session.user.username;
+      const toUserInvites = users
+        .filter((e) => e.username === username)
+        .map((e) => e.Invites);
+      console.log(toUserInvites);
+      if (toUserInvites.length === 0 || !toUserInvites[0])
+        return setIsInvited(false);
+      const toUserHasInvite = toUserInvites[0].some((e) => {
+        return e.Chatroom.id === chatroom.id && e.from.username === fromUser;
+      });
+      return setIsInvited(toUserHasInvite);
+    };
+
+    checkIfInvited();
+  }, [chatroom.id, username, session, users]);
+
+  return (
+    <div className="flex gap-2 items-center w-full dark:hover:bg-dark-5 hover:bg-dark-1 rounded p-2">
+      <Avatar src={picture} alt="profile picture" />
+      <span className="font-medium">{username}</span>
+      <div className="flex items-center justify-end grow">
+        <Button
+          variant="outline"
+          size="compact-md"
+          className="font-normal text-sm"
+          disabled={isInvited}
+          onClick={sendInvite}
+          color={isInvited ? 'green' : 'blue'}
+        >
+          {isInvited ? 'Invited' : 'Invite'}
+        </Button>
+      </div>
+    </div>
+  );
+};

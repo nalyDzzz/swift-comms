@@ -179,6 +179,10 @@ export async function getMessages(
 
 export async function addInvite(from: string, to: string, chatroom: string) {
   try {
+    const exists = await prisma.invite.findFirst({
+      where: { fromId: from, toId: to, ChatroomId: chatroom },
+    });
+    if (exists) throw new Error('Invite already exists');
     const result = await prisma.invite.create({
       data: {
         fromId: from,
@@ -264,7 +268,7 @@ export async function getAllUsers() {
           select: {
             from: { select: { username: true } },
             to: { select: { username: true } },
-            Chatroom: { select: { name: true } },
+            Chatroom: { select: { name: true, id: true } },
           },
         },
       },
