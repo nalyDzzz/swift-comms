@@ -139,7 +139,7 @@ const NavContent = () => {
   return (
     <>
       <CreateRoomButton />
-      <div className="w-full overflow-y-scroll" id="chatroom-list">
+      <div className="w-full overflow-y-auto" id="chatroom-list">
         {chatrooms.map((e) => (
           <Link
             href={e.id === '1' ? '/chat' : `/chat/${e.id}`}

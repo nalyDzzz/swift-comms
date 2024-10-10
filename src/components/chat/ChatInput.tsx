@@ -1,35 +1,31 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import React, { useState } from 'react';
-import { Textarea, useMantineColorScheme } from '@mantine/core';
+import { Popover, Textarea, useMantineColorScheme } from '@mantine/core';
 import { BsEmojiSmile } from 'react-icons/bs';
-import EmojiPicker, { EmojiStyle, Theme } from 'emoji-picker-react';
-import { getHotkeyHandler, useClickOutside } from '@mantine/hooks';
+import { getHotkeyHandler } from '@mantine/hooks';
 import { cn } from '@/lib/utils';
 import { useSocket } from '@/components/context/SocketProvider';
 import { useSession } from 'next-auth/react';
+import Picker from '@emoji-mart/react';
 import { SendMessage } from '@/lib/types';
 
 type ChatInputProps = {
   roomId: string;
+  emojis: any;
 } & React.ComponentPropsWithoutRef<'textarea'>;
 
-export default function ChatInput({ roomId, ...props }: ChatInputProps) {
+export default function ChatInput({
+  roomId,
+  emojis,
+  ...props
+}: ChatInputProps) {
   const { socket } = useSocket();
   const { data: session } = useSession();
-  const [button, setButton] = useState<HTMLDivElement | null>(null);
-  const [picker, setPicker] = useState<HTMLDivElement | null>(null);
-  const { colorScheme } = useMantineColorScheme();
-  const [open, setOpen] = useState(false);
   const [value, setValue] = useState('');
-  const handleClick = () => {
-    return open ? setOpen(false) : setOpen(true);
-  };
   const handleEmojiPick = (emoji: string) => {
     setValue(value + emoji);
-    setOpen(false);
   };
-
-  useClickOutside(() => setOpen(false), null, [button, picker]);
 
   const sendMessage = () => {
     if (value.trim() === '') return;
@@ -52,12 +48,10 @@ export default function ChatInput({ roomId, ...props }: ChatInputProps) {
     <div className={cn('relative', props.className)}>
       <Textarea
         rightSection={
-          <div
-            ref={setButton}
-            className="w-fit h-fit justify-center align-middle hidden sm:flex"
-          >
-            <EmojiButton onClick={handleClick} />
-          </div>
+          <EmojiPickerPopover
+            handleEmojiPick={handleEmojiPick}
+            emojis={emojis}
+          />
         }
         placeholder="Type something"
         rightSectionPointerEvents="all"
@@ -66,36 +60,48 @@ export default function ChatInput({ roomId, ...props }: ChatInputProps) {
         onChange={(e) => setValue(e.currentTarget.value)}
         onKeyDown={getHotkeyHandler([['Enter', sendMessage]])}
       />
-      <div
-        ref={setPicker}
-        className="w-fit h-fit z-10 absolute bottom-9 right-0"
-      >
-        <EmojiPicker
-          className="bg-gray-800"
-          open={open}
-          theme={
-            colorScheme === 'auto'
-              ? Theme.AUTO
-              : colorScheme === 'dark'
-              ? Theme.DARK
-              : Theme.LIGHT
-          }
-          emojiStyle={EmojiStyle.GOOGLE}
-          onEmojiClick={(e) => handleEmojiPick(e.emoji)}
-        />
-      </div>
     </div>
   );
 }
 
-const EmojiButton: React.FC<React.ComponentPropsWithRef<'button'>> = (
-  props
-) => {
+type EmojiPickerPopoverProps = {
+  handleEmojiPick: (emoji: string) => void;
+  emojis: any;
+};
+
+const EmojiPickerPopover = ({
+  handleEmojiPick,
+  emojis,
+}: EmojiPickerPopoverProps) => {
+  const [opened, setOpened] = useState(false);
+  const { colorScheme } = useMantineColorScheme();
+
   return (
-    <>
-      <button className="hover:cursor-pointer" {...props}>
-        <BsEmojiSmile />
-      </button>
-    </>
+    <Popover
+      opened={opened}
+      onChange={setOpened}
+      offset={{ crossAxis: -160, mainAxis: 10 }}
+      position="top"
+    >
+      <Popover.Target>
+        <button
+          className="hover:cursor-pointer w-fit h-fit justify-center align-middle hidden sm:flex"
+          onClick={() => setOpened((o) => !o)}
+        >
+          <BsEmojiSmile />
+        </button>
+      </Popover.Target>
+      <Popover.Dropdown className="p-0 bg-transparent border-0 shadow-none">
+        <Picker
+          data={emojis}
+          theme={colorScheme}
+          onEmojiSelect={(e: any) => {
+            console.log(e);
+            handleEmojiPick(e.native);
+            setOpened(false);
+          }}
+        />
+      </Popover.Dropdown>
+    </Popover>
   );
 };

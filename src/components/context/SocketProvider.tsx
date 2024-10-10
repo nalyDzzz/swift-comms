@@ -61,6 +61,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
       return () => {
         socket.disconnect();
+        socket.off('connect');
+        socket.off('disconnect');
       };
     }
   }, [socket]);

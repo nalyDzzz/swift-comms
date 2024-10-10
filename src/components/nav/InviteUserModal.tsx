@@ -1,5 +1,12 @@
 import type { Chatroom, SendInvite } from '@/lib/types';
-import { ActionIcon, Button, Modal, TextInput, Tooltip } from '@mantine/core';
+import {
+  ActionIcon,
+  Button,
+  FocusTrap,
+  Modal,
+  TextInput,
+  Tooltip,
+} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import React, { useEffect, useState } from 'react';
 import { FaUserFriends } from 'react-icons/fa';
@@ -45,12 +52,15 @@ export default function InviteUserModal({ chatroom }: Props) {
         classNames={{ title: 'text-xl font-semibold' }}
       >
         <div className="h-96">
-          <TextInput
-            value={search}
-            onChange={(e) => setSearch(e.currentTarget.value)}
-            placeholder="Search friends"
-          />
-          <div className="flex flex-col gap-2 w-full p-2 h-[92%] overflow-y-scroll overflow-x-hidden">
+          <FocusTrap active={opened}>
+            <TextInput
+              value={search}
+              onChange={(e) => setSearch(e.currentTarget.value)}
+              placeholder="Search friends"
+              data-autofocus
+            />
+          </FocusTrap>
+          <div className="flex flex-col gap-2 w-full p-2 h-[92%] overflow-y-auto overflow-x-hidden">
             {filtered.map((el) => (
               <UserList
                 chatroom={chatroom}
