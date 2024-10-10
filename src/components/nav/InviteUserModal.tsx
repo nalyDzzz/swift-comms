@@ -124,7 +124,7 @@ const UserList = ({ chatroom, picture, username, id }: UserListProps) => {
           className="font-normal text-sm"
           disabled={isInvited}
           onClick={sendInvite}
-          color={isInvited ? 'green' : 'blue'}
+          color={isInvited ? 'green' : 'primary'}
         >
           {isInvited ? 'Invited' : 'Invite'}
         </Button>
