@@ -24,7 +24,7 @@ export default function ioHandler(
 
     io.on('connection', (socket) => {
       const user: Session['user'] = socket.handshake.auth.user;
-
+      console.log(`User connected: ${socket.id}`);
       if (user.id) {
         socket.join(user.id);
       }

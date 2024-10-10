@@ -42,8 +42,6 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         },
       });
 
-      setSocket(newSocket);
-
       newSocket.on('connect', () => {
         console.log('Connected to Socket.IO server');
         setConnected(true);
@@ -52,7 +50,10 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       newSocket.on('disconnect', () => {
         console.log('Disconnected from Socket.IO server');
         setConnected(false);
+        setSocket(null);
       });
+
+      setSocket(newSocket);
 
       return () => {
         newSocket.disconnect();

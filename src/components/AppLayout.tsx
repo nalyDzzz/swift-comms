@@ -67,7 +67,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
 const AvatarDropdown = ({ session }: { session: Session | null }) => {
   const { toggleColorScheme } = useMantineColorScheme();
   const [opened, { open, close }] = useDisclosure(false);
-  const { socket } = useSocket();
+  const { connected } = useSocket();
   return (
     <>
       <Menu>
@@ -78,7 +78,7 @@ const AvatarDropdown = ({ session }: { session: Session | null }) => {
               withBorder
               size={15}
               offset={5}
-              color={socket ? 'green' : 'red'}
+              color={connected ? 'green' : 'red'}
             >
               <Avatar alt="profile picture" src={session?.user?.image}>
                 DM
