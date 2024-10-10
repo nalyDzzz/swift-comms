@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import '@mantine/core/styles.css';
 import '@/styles/globals.css';
-import Providers from './providers';
 import { SessionProvider } from 'next-auth/react';
 import { auth } from '@/lib/auth';
+import ThemeProvider from '@/components/context/ThemeProvider';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -20,7 +20,7 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="h-screen overflow-y-hidden">
         <SessionProvider session={session}>
-          <Providers>{children}</Providers>
+          <ThemeProvider>{children}</ThemeProvider>
         </SessionProvider>
       </body>
     </html>
