@@ -18,7 +18,10 @@ export default function InviteUserModal({ chatroom }: Props) {
   const { data: session } = useSession();
   const [search, setSearch] = useState('');
   const { users } = useData();
-  const filtered = users.filter((e) =>
+  const notPartOfChat = users.filter(
+    (e) => !e.chatrooms.some((chat) => chat.id === chatroom.id)
+  );
+  const filtered = notPartOfChat.filter((e) =>
     e.username?.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -31,7 +34,7 @@ export default function InviteUserModal({ chatroom }: Props) {
     if (toUserInvites.length === 0 || toUserInvites[0] === undefined)
       return false;
     const toUserHasInvite = toUserInvites[0].find((e) => {
-      return e.Chatroom.name === chatroom.name && e.from.username === fromUser;
+      return e.Chatroom.id === chatroom.id && e.from.username === fromUser;
     });
     return toUserHasInvite ? true : false;
   };
@@ -89,6 +92,7 @@ export default function InviteUserModal({ chatroom }: Props) {
                     variant="outline"
                     size="compact-md"
                     className="font-normal text-sm"
+                    disabled={checkIfInvited(el.username as string)}
                     onClick={() => sendInvite(el.id)}
                     color={
                       !checkIfInvited(el.username as string) ? 'blue' : 'green'

@@ -259,6 +259,7 @@ export async function getAllUsers() {
         name: true,
         username: true,
         picture: true,
+        chatrooms: { select: { id: true } },
         Invites: {
           select: {
             from: { select: { username: true } },

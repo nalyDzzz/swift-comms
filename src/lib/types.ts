@@ -53,11 +53,14 @@ export type User = Prisma.UserGetPayload<{
     name: true;
     username: true;
     picture: true;
+    chatrooms: {
+      select: { id: true };
+    };
     Invites: {
       select: {
         from: { select: { username: true } };
         to: { select: { username: true } };
-        Chatroom: { select: { name: true } };
+        Chatroom: { select: { name: true; id: true } };
       };
     };
   };
