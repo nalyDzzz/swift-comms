@@ -96,7 +96,7 @@ const AvatarDropdown = ({ session }: { session: Session | null }) => {
         <Menu.Dropdown>
           <Menu.Label>Options</Menu.Label>
           <Menu.Item onClick={() => toggleColorScheme()}>
-            Theme Toggle
+            Toggle Theme
           </Menu.Item>
           <Menu.Item component="a" onClick={open}>
             Sign out
