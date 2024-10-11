@@ -33,3 +33,8 @@
 #chatroom-list::-webkit-scrollbar {
   width: 5px;
 }
+
+*::selection {
+  background: var(--mantine-primary-color-5);
+  color: var(--mantine-color-dark-9);
+}
