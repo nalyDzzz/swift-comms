@@ -18,7 +18,11 @@ export default function CreateRoomButton({}: Props) {
   }, [state?.errors, formAction]);
 
   return (
-    <Popover opened={opened} onChange={setOpened}>
+    <Popover
+      opened={opened}
+      onChange={setOpened}
+      transitionProps={{ transition: 'scale' }}
+    >
       <Popover.Target>
         <Button
           variant="outline"

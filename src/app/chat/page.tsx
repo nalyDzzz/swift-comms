@@ -23,7 +23,12 @@ export default async function Chat() {
       {!session?.user.username && <AddUsernameModal />}
       <div className="h-full w-full flex flex-col items-center relative">
         <ChatMessageList initialMessages={messages} roomId={'1'} />
-        <ChatInput className="w-11/12 mb-5" roomId={'1'} emojis={data} />
+        <ChatInput
+          className="w-11/12 mb-5"
+          roomId={'1'}
+          emojis={data}
+          chatroomName="Global"
+        />
       </div>
     </div>
   );

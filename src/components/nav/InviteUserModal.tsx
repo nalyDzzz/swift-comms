@@ -46,6 +46,7 @@ export default function InviteUserModal({ chatroom }: Props) {
         </ActionIcon>
       </Tooltip>
       <Modal
+        transitionProps={{ transition: 'scale' }}
         opened={opened}
         onClose={close}
         title={`Invite friends to ${chatroom.name}`}

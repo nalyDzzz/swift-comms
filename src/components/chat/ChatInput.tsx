@@ -13,11 +13,13 @@ import { SendMessage } from '@/lib/types';
 type ChatInputProps = {
   roomId: string;
   emojis: any;
+  chatroomName: string;
 } & React.ComponentPropsWithoutRef<'textarea'>;
 
 export default function ChatInput({
   roomId,
   emojis,
+  chatroomName,
   ...props
 }: ChatInputProps) {
   const { socket } = useSocket();
@@ -53,7 +55,7 @@ export default function ChatInput({
             emojis={emojis}
           />
         }
-        placeholder="Type something"
+        placeholder={`Message ${chatroomName}`}
         rightSectionPointerEvents="all"
         autosize
         value={value}
@@ -82,6 +84,7 @@ const EmojiPickerPopover = ({
       onChange={setOpened}
       offset={{ crossAxis: -160, mainAxis: 10 }}
       position="top"
+      transitionProps={{ transition: 'pop' }}
     >
       <Popover.Target>
         <button
@@ -96,7 +99,6 @@ const EmojiPickerPopover = ({
           data={emojis}
           theme={colorScheme}
           onEmojiSelect={(e: any) => {
-            console.log(e);
             handleEmojiPick(e.native);
             setOpened(false);
           }}

@@ -6,6 +6,7 @@ import { initialMessages } from '@/lib/types';
 import { auth } from '@/lib/auth';
 import AddUsernameModal from '@/components/AddUsernameModal';
 import prisma from '@/app/api/db';
+import { notFound } from 'next/navigation';
 
 interface ChatroomProps {
   params: {
@@ -29,17 +30,23 @@ export default async function Chatroom({ params }: ChatroomProps) {
     where: { id: roomId },
     select: { name: true },
   });
+  if (!chatroom) notFound();
   const limit = 20;
   const messages: initialMessages = await getMessages(roomId, limit);
   const emoji = await fetch('https://cdn.jsdelivr.net/npm/@emoji-mart/data');
   const data = await emoji.json();
   return (
     <div className="h-full">
-      <h1 className="text-2xl font-semibold">{chatroom?.name}</h1>
+      <h1 className="text-2xl font-semibold">{chatroom.name}</h1>
       {!session?.user.username && <AddUsernameModal />}
       <div className="h-full w-full flex flex-col items-center relative">
         <ChatMessageList initialMessages={messages} roomId={roomId} />
-        <ChatInput className="w-11/12 mb-5" roomId={roomId} emojis={data} />
+        <ChatInput
+          className="w-11/12 mb-5"
+          roomId={roomId}
+          emojis={data}
+          chatroomName={chatroom.name}
+        />
       </div>
     </div>
   );

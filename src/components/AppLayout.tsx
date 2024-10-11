@@ -104,6 +104,7 @@ const AvatarDropdown = ({ session }: { session: Session | null }) => {
         </Menu.Dropdown>
       </Menu>
       <Modal
+        transitionProps={{ transition: 'scale' }}
         opened={opened}
         onClose={close}
         classNames={{ body: 'flex flex-col justify-center items-center' }}
@@ -111,9 +112,9 @@ const AvatarDropdown = ({ session }: { session: Session | null }) => {
         withCloseButton={false}
         radius="lg"
       >
-        <p>Are you sure?</p>
+        <p className="font-semibold text-xl">Are you sure?</p>
         <div className="flex flex-row gap-2 pt-5">
-          <Button color="cyan.8" onClick={() => signOut()}>
+          <Button color="primary" onClick={() => signOut()}>
             Yes
           </Button>
           <Button color="gray" onClick={close}>

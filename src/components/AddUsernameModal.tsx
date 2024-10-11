@@ -22,7 +22,13 @@ const AddUsernameModal = () => {
   });
 
   return (
-    <Modal opened={opened} onClose={close} withCloseButton={false} radius="lg">
+    <Modal
+      opened={opened}
+      onClose={close}
+      withCloseButton={false}
+      radius="lg"
+      transitionProps={{ transition: 'scale' }}
+    >
       <div className="flex flex-col items-center p-4">
         <h3 className="text-xl">Please choose a username</h3>
         <form

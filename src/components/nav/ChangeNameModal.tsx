@@ -59,7 +59,12 @@ export default function ChangeNameModal({ chatroom }: { chatroom: Chatroom }) {
   const isOwner = userId === chatroom.OwnerId;
 
   return (
-    <Popover opened={opened} onChange={setOpened} withArrow>
+    <Popover
+      opened={opened}
+      onChange={setOpened}
+      withArrow
+      transitionProps={{ transition: 'scale' }}
+    >
       <Popover.Target>
         <Tooltip
           label={isOwner ? 'Rename or Delete' : 'Leave'}
