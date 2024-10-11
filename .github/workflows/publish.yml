@@ -8,5 +8,5 @@ jobs:
       - name: Build and push to GPR
         run: |
           docker login --username nalyDzzz --password ${{ secrets.GH_PAT }} ghcr.io
-          docker build . -t ghcr.io/nalydzzz/swift-comms:latest
+          docker build . -t ghcr.io/nalydzzz/swift-comms:latest --build-arg DATABASE_URL=${{secrets.DB_URL}}
           docker push ghcr.io/nalydzzz/swift-comms:latest
