@@ -10,11 +10,10 @@ import { DataProvider } from '@/components/context/DataProvider';
 
 export default async function ChatLayout({ children }: PropsWithChildren) {
   const session = await auth();
-  if (!session || !session.user.email || !session.user.id)
-    redirect('/auth/login');
-  const chatrooms = await getChatrooms(session.user.email);
+  if (!session) redirect('/auth/login');
+  const chatrooms = await getChatrooms(session.user.email!);
   const users = await getAllUsers();
-  const invites = await getInvites(session.user.id);
+  const invites = await getInvites(session.user.id!);
   return (
     <main className="h-full">
       <DataProvider users={users} chatrooms={chatrooms} invites={invites}>
