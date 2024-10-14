@@ -49,12 +49,14 @@ export default function ChangeNameModal({ chatroom }: { chatroom: Chatroom }) {
     } else {
       await deleteChatroom(chatroom.id);
       router.push('/chat');
+      router.refresh();
     }
   };
 
   const handleLeave = async () => {
     await leaveChatroom(chatroom.id, userId);
     router.push('/chat');
+    router.refresh();
   };
 
   const isOwner = userId === chatroom.OwnerId;

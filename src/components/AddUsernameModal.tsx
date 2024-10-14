@@ -1,11 +1,10 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, TextInput } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useFormState } from 'react-dom';
 import { addUsername } from '@/lib/formval';
 import { useSession } from 'next-auth/react';
-import { useIsomorphicEffect } from '@mantine/hooks';
 
 const initialState = { errors: [] };
 
@@ -15,11 +14,13 @@ const AddUsernameModal = () => {
   const [state, formAction] = useFormState(addUsername, initialState);
   const [value, setValue] = useState('');
 
-  useIsomorphicEffect(() => {
-    if (!session!.user.username) {
+  useEffect(() => {
+    if (!session?.user.username) {
       open();
+    } else {
+      close();
     }
-  });
+  }, [session?.user.username, open, close]);
 
   return (
     <Modal
@@ -35,8 +36,7 @@ const AddUsernameModal = () => {
           action={async (formData) => {
             await formAction(formData);
             setValue('');
-            close();
-            location.reload();
+            location.assign('/chat');
           }}
         >
           <TextInput
