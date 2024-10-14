@@ -48,6 +48,7 @@ export default function ChangeNameModal({ chatroom }: { chatroom: Chatroom }) {
       return;
     } else {
       await deleteChatroom(chatroom.id);
+      router.push('/chat');
     }
   };
 
