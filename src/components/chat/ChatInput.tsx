@@ -38,6 +38,7 @@ export default function ChatInput({
         username: session?.user?.username as string,
         name: session?.user.name as string,
         picture: session?.user?.image || null,
+        email: session?.user.email as string,
       },
       date: date,
     };

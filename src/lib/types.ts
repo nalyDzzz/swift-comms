@@ -13,7 +13,9 @@ export type initialMessage = Prisma.MessageGetPayload<{
 export type SendMessage = Prisma.MessageGetPayload<{
   select: {
     date: true;
-    author: { select: { name: true; username: true; picture: true } };
+    author: {
+      select: { name: true; username: true; picture: true; email: true };
+    };
     content: true;
   };
 }>;

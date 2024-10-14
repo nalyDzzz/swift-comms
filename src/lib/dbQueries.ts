@@ -56,6 +56,7 @@ export async function addUsernameDb(email: string, username: string) {
         data: { username },
       });
       if (!result) throw new Error('Error adding username');
+      revalidatePath('/chat');
       return 'Success';
     } else {
       return 'User already has a username';
@@ -133,7 +134,9 @@ export async function getChatrooms(email: string) {
 export async function addMessage(roomId: string, message: SendMessage) {
   try {
     const user = await prisma.user.findUnique({
-      where: { username: message.author.username as string },
+      where: message.author.username
+        ? { username: message.author.username }
+        : { email: message.author.email },
       select: { id: true },
     });
     if (!user) throw new Error('Cannot find user');

@@ -16,7 +16,7 @@ const AddUsernameModal = () => {
   const [value, setValue] = useState('');
 
   useIsomorphicEffect(() => {
-    if (!session?.user.username) {
+    if (!session!.user.username) {
       open();
     }
   });
@@ -36,6 +36,7 @@ const AddUsernameModal = () => {
             await formAction(formData);
             setValue('');
             close();
+            location.reload();
           }}
         >
           <TextInput
