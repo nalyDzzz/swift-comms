@@ -170,7 +170,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Contact
 
-Dylan - [@nalyDzzz](https://twitter.com/nalyDzzz) - dylanmarin2018@gmail.com
+Dylan - @nalyD. (Discord) - dylanmarin2018@gmail.com
 
 Project Link: [https://github.com/nalyDzzz/swift-comms](https://github.com/nalyDzzz/swift-comms)
 
